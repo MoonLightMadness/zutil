@@ -1,5 +1,11 @@
 import app.config.impl.NormalConfig;
+import app.log.Log;
+import app.log.LogFactory;
+import app.log.impl.NormalLog;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
 
 public class playTest {
 
@@ -21,11 +27,28 @@ public class playTest {
 
     @Test
     public void test2(){
-        String meta = "C:\\Users\\Administrator\\Desktop\\temp\\meta.txt";
         NormalConfig normalConfig = new NormalConfig();
-        normalConfig.setMeta(meta);
-        normalConfig.write("test2","zutil2",normalConfig.read("path"));
-        System.out.println(normalConfig.read("test2"));
+        normalConfig.update("test","uz111",normalConfig.read("sys.path"));
+        System.out.println(normalConfig.read("test"));
+    }
+
+    @Test
+    public void test3() throws IOException {
+        File file = new File("./config/meta.txt");
+        System.out.println(file.getName());
+        System.out.println(file.getPath());
+        System.out.println(file.getCanonicalPath());
+        System.out.println(file.getAbsolutePath());
+        System.out.println(file.getParent());
+    }
+
+    @Test
+    public void test4() throws IOException {
+        long start = System.currentTimeMillis();
+        for (int i =0;i<1000;i++){
+            LogFactory.getNormalLog().info("{}{}这是{}测试{}",i,"1","2","b");
+        }
+        System.out.println(System.currentTimeMillis() - start);
     }
 
     public StringBuilder logBuilder = new StringBuilder();

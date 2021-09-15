@@ -28,6 +28,18 @@ public interface Config {
 
 
     /**
+     * 更新属性
+     * @param key   键
+     * @param newValue 值
+     * @param path  路径
+     * @return
+     * @author zhl
+     * @date 2021-09-15 20:37
+     * @version V1.0
+     */
+    void update(String key, String newValue, String path);
+
+    /**
      * 设置元文件路径
      * @param metaFile 元文件
      * @return
