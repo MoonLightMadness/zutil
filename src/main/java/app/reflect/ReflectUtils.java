@@ -2,16 +2,10 @@ package app.reflect;
 
 
 
-import app.reflect.annotation.Authority;
-import app.reflect.annotation.Path;
-import app.reflect.container.Indicators;
-import app.reflect.domain.ReflectIndicator;
-import app.reflect.enums.AuthorityEnum;
-import app.utils.SimpleUtils;
 
+import app.utils.SimpleUtils;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Enumeration;
@@ -27,7 +21,15 @@ import java.util.jar.JarFile;
 public class ReflectUtils {
 
 
-    public static void scanPackage(String packageName, Indicators indicator) {
+    /**
+     * 扫描指定路径下的.java的所有文件或者指定jar包中的所有.class文件
+     * @param packageName 包名
+     * @return @return {@link String[] }
+     * @author zhl
+     * @date 2021-09-16 09:05
+     * @version V1.0
+     */
+    public static String[] scanPackage(String packageName) {
         String workingPath = getJarSelfPath();
         String[] paths;
         //判断程序是否是以jar包形式启动的
@@ -37,59 +39,11 @@ public class ReflectUtils {
             workingPath = ".";
             paths = scanDirectory(workingPath).split("\n");
         }
-        //寻找以packageName开头且有Path注解的类和方法
-        for (String path : paths) {
-            path = path.trim().replace(SimpleUtils.getFilePathSeparator(), ".");
-            if (path.startsWith(packageName)) {
-                constructReflectIndicator(path, indicator);
-            }
-        }
+        return paths;
     }
 
-    public static void constructReflectIndicator(String className, Indicators indicator) {
-        ReflectIndicator temp = null;
-        Class clazz = null;
-        try {
-            clazz = Class.forName(className);
-        } catch (Exception e) {
 
-        }
-        if (clazz != null && clazz.isAnnotationPresent(Path.class)) {
-            Path classPath = (Path) clazz.getDeclaredAnnotation(Path.class);
-            Method[] methods = clazz.getDeclaredMethods();
-            for (Method method : methods) {
-                method.setAccessible(true);
-                if (method.isAnnotationPresent(Path.class)) {
-                    Path methodPath = method.getDeclaredAnnotation(Path.class);
-                    temp = new ReflectIndicator();
-                    temp.setClassPath(className);
-                    temp.setMethodName(method.getName());
-                    temp.setParameterTypes(generateParameters(method));
-                    temp.setRelativePath(classPath.value() + methodPath.value());
-                    //判断有无权限注解
-                    if (method.isAnnotationPresent(Authority.class)) {
-                        Authority authority = method.getDeclaredAnnotation(Authority.class);
-                        temp.setAuthority(authority.value());
-                    } else {
-                        //如果没有权限注解,则添加默认权限
-                        temp.setAuthority(AuthorityEnum.NORMAL.msg());
-                    }
-                    indicator.add(temp);
-                }
-            }
-        }
-    }
-
-    private static String[] generateParameters(Method method) {
-        String[] paras = new String[method.getParameterCount()];
-        int count = 0;
-        for (Class clazz : method.getParameterTypes()) {
-            paras[count++] = clazz.getName();
-        }
-        return paras;
-    }
-
-    public static String scanDirectory(String directory) {
+    private static String scanDirectory(String directory) {
         File file = new File(directory);
         StringBuilder sb = new StringBuilder();
         if (!file.exists()) {
@@ -108,7 +62,7 @@ public class ReflectUtils {
         return sb.toString();
     }
 
-    public static String scanJarFile(String path) {
+    private static String scanJarFile(String path) {
         File f = new File(path);
         StringBuilder sb = new StringBuilder();
         try {
@@ -136,7 +90,7 @@ public class ReflectUtils {
      * @date 2021-08-12 23:10
      * @version V1.0
      */
-    public static String getJarSelfPath() {
+    private static String getJarSelfPath() {
         URL url = SimpleUtils.class.getProtectionDomain().getCodeSource().getLocation();
         String path = null;
         try {
