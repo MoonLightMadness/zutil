@@ -143,8 +143,14 @@ public class NormalConfig implements Config {
         return res;
     }
 
+    @SneakyThrows
     private String getValue(String data) {
-        return data.split("=")[1].trim();
+        String[] cut = data.split("=");
+        if(cut.length > 1){
+            return cut[1].trim();
+        }else {
+            throw new ConfigException(ConfigEnum.CE_004.getCode(),ConfigEnum.CE_004.getMsg());
+        }
     }
 
     private String getKey(String data) {

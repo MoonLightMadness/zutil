@@ -14,7 +14,10 @@ public enum ConfigEnum {
      * 003 指定文件不存在
      */
     CE_003("003","指定文件不存在"),
-
+    /**
+     * 004 只有键没有值
+     */
+    CE_004("004","只有键没有值"),
     ;
     private String code;
 
