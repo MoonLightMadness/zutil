@@ -56,7 +56,9 @@ public class ReflectUtils {
             }
         } else {
             if (file.getPath().endsWith(".java")) {
-                sb.append(file.getPath().replace(SimpleUtils.getFilePathSeparator(), ".").substring(6, file.getPath().lastIndexOf('.'))).append("\n");
+                String path = file.getPath().replace(SimpleUtils.getFilePathSeparator(), ".").substring(6, file.getPath().lastIndexOf('.'));
+                path = path.substring(10);
+                sb.append(path).append("\n");
             }
         }
         return sb.toString();
