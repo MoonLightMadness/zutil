@@ -37,7 +37,7 @@ public class ReflectUtils {
         if (workingPath.endsWith(".jar")) {
             paths = scanJarFile(workingPath, packageName).split("\n");
         } else {
-            workingPath = ".";
+            workingPath = packageName;
             paths = scanDirectory(workingPath).split("\n");
         }
         return paths;
