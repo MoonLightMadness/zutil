@@ -1,3 +1,5 @@
+import app.config.annotation.ConfigPath;
+import app.config.impl.ConfigInitializer;
 import app.config.impl.NormalConfig;
 import app.log.Log;
 import app.log.LogFactory;
@@ -6,7 +8,10 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
+
+@ConfigPath(value = {"sys.path"})
 public class playTest {
 
 
@@ -69,6 +74,15 @@ public class playTest {
             }
         }
         logBuilder.append(msg);
+    }
+
+    @Test
+    public void test5(){
+        ConfigInitializer configInitializer = new ConfigInitializer();
+        configInitializer.loadConfigPath();
+        playTest playTest = new playTest();
+        ConfigPath configPath = playTest.getClass().getAnnotation(ConfigPath.class);
+        System.out.println(Arrays.toString(configPath.value()));
     }
 
     private String getStackTrace(Exception e){

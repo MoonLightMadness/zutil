@@ -5,7 +5,7 @@ system.name = zutil
 
 system.normal.log.loglevel = 3
 
-system.normal.log.last = 2021-09-16
+system.normal.log.last = 2021-09-18
 
 system.log.path = C:\Users\Administrator\Desktop\temp\log
 
