@@ -1,9 +1,8 @@
 package app.reflect;
 
 
-
-
 import app.utils.SimpleUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -23,6 +22,7 @@ public class ReflectUtils {
 
     /**
      * 扫描指定路径下的.java的所有文件或者指定jar包中的所有.class文件
+     *
      * @param packageName 包名
      * @return @return {@link String[] }
      * @author zhl
@@ -34,7 +34,7 @@ public class ReflectUtils {
         String[] paths;
         //判断程序是否是以jar包形式启动的
         if (workingPath.endsWith(".jar")) {
-            paths = scanJarFile(workingPath).split("\n");
+            paths = scanJarFile(workingPath, packageName).split("\n");
         } else {
             workingPath = ".";
             paths = scanDirectory(workingPath).split("\n");
@@ -62,7 +62,7 @@ public class ReflectUtils {
         return sb.toString();
     }
 
-    private static String scanJarFile(String path) {
+    private static String scanJarFile(String path, String packageName) {
         File f = new File(path);
         StringBuilder sb = new StringBuilder();
         try {
@@ -70,9 +70,11 @@ public class ReflectUtils {
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
-                File temp = new File(entry.getName());
-                if (entry.getName().endsWith(".class")) {
-                    sb.append(temp.getPath().replace(SimpleUtils.getFilePathSeparator(), ".").substring(0, temp.getPath().lastIndexOf('.'))).append("\n");
+                if (entry.getName().replace(SimpleUtils.getFilePathSeparator(), ".").startsWith(packageName)) {
+                    File temp = new File(entry.getName());
+                    if (entry.getName().endsWith(".class")) {
+                        sb.append(temp.getPath().replace(SimpleUtils.getFilePathSeparator(), ".").substring(0, temp.getPath().lastIndexOf('.'))).append("\n");
+                    }
                 }
             }
         } catch (IOException e) {

@@ -1,4 +1,4 @@
-package play;
+package app.play;
 
 import app.config.annotation.ConfigPath;
 import app.config.impl.ConfigInitializer;

@@ -35,23 +35,24 @@ public class ConfigInitializer implements IConfigInitializer {
      */
     @Override
     public void loadConfigPath() {
-        String[] allPaths = ReflectUtils.scanPackage("main.java.app.utils");
+        String[] allPaths = ReflectUtils.scanPackage("app");
         try {
             for (String path : allPaths){
-                Class clazz = Class.forName(path.substring(10));
+                Class clazz = Class.forName(path);
                 Annotation annotation = clazz.getAnnotation(ConfigPath.class);
                 if(annotation != null){
                     changeVariable(annotation);
                 }
             }
-        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (ClassNotFoundException | IllegalAccessException |
+                NoSuchMethodException | InvocationTargetException | NoSuchFieldException e) {
             Core.log.info("未找到类,原因:{}",e);
         }
     }
 
-    private void changeVariable(Annotation annotation) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    private void changeVariable(Annotation annotation) throws IllegalAccessException, NoSuchMethodException,
+            InvocationTargetException, NoSuchFieldException {
         ConfigPath configPath = (ConfigPath) annotation;
-        Method method = configPath.getClass().getMethod("value");
         String[] mapStrs = configPath.value();
         int count = 0;
         for (String mapStr : mapStrs){
