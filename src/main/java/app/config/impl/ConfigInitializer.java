@@ -7,9 +7,12 @@ import app.config.annotation.ConfigPath;
 import app.reflect.ReflectUtils;
 import app.system.Core;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
+import java.lang.reflect.*;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName : app.config.impl.ConfigInitializer
@@ -32,27 +35,39 @@ public class ConfigInitializer implements IConfigInitializer {
      */
     @Override
     public void loadConfigPath() {
-        String[] allPaths = ReflectUtils.scanPackage(".");
+        String[] allPaths = ReflectUtils.scanPackage("main.java.app.utils");
         try {
             for (String path : allPaths){
-                Class clazz = Class.forName(path);
+                Class clazz = Class.forName(path.substring(10));
                 Annotation annotation = clazz.getAnnotation(ConfigPath.class);
                 if(annotation != null){
                     changeVariable(annotation);
                 }
             }
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             Core.log.info("未找到类,原因:{}",e);
         }
     }
 
-    private void changeVariable(Annotation annotation){
+    private void changeVariable(Annotation annotation) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         ConfigPath configPath = (ConfigPath) annotation;
+        Method method = configPath.getClass().getMethod("value");
         String[] mapStrs = configPath.value();
         int count = 0;
         for (String mapStr : mapStrs){
-            mapStrs[count++] = systemConfig.read(mapStr);
+            String newStr = systemConfig.read(mapStr);
+            mapStrs[count++] = newStr;
         }
+        //获取这个代理实例所持有的 InvocationHandler
+        InvocationHandler h = Proxy.getInvocationHandler(configPath);
+        // 获取 AnnotationInvocationHandler 的 memberValues 字段
+        Field hField = h.getClass().getDeclaredField("memberValues");
+        // 因为这个字段事 private final 修饰，所以要打开权限
+        hField.setAccessible(true);
+        // 获取 memberValues
+        Map memberValues = (Map) hField.get(h);
+        // 修改 value 属性值
+        memberValues.put("value", mapStrs);
     }
 
     /**
