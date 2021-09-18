@@ -18,7 +18,7 @@ public class NormalConfig implements Config {
     /**
      * 元信息文件，具有默认路径
      */
-    private String meta = "./config/meta.txt";
+    private String[] meta = {"./config/meta.txt"};
 
     /**
      * 缓存
@@ -29,14 +29,14 @@ public class NormalConfig implements Config {
 
 
     @Override
-    public void setMeta(String metaFile) {
+    public void setMeta(String[] metaFile) {
         this.meta = metaFile;
     }
 
     @SneakyThrows
     @Override
     public String read(String property) {
-        if(cache == null){
+        if (cache == null) {
             refresh();
         }
         String value = cache.get(property);
@@ -65,8 +65,8 @@ public class NormalConfig implements Config {
         checkFileExist(path);
         String cpath = createCopy(path);
         String data = updateRead(key, newValue, path);
-        writeToCopy(data,cpath);
-        replaceWithCopy(path,cpath);
+        writeToCopy(data, cpath);
+        replaceWithCopy(path, cpath);
     }
 
     /**
@@ -92,14 +92,14 @@ public class NormalConfig implements Config {
     }
 
     @SneakyThrows
-    private String updateRead(String key, String newValue, String path){
+    private String updateRead(String key, String newValue, String path) {
         StringBuilder res = new StringBuilder();
         BufferedReader reader = new BufferedReader(new FileReader(path));
         String temp;
         while ((temp = reader.readLine()) != null) {
-            if(getKey(temp).equals(key)){
+            if (getKey(temp).equals(key)) {
                 res.append(key).append(" = ").append(newValue).append("\n");
-            }else {
+            } else {
                 res.append(temp).append("\n");
             }
         }
@@ -109,7 +109,7 @@ public class NormalConfig implements Config {
 
 
     @SneakyThrows
-    private void writeToCopy(String data,String path){
+    private void writeToCopy(String data, String path) {
         BufferedWriter writer = new BufferedWriter(new FileWriter(path, true));
         writer.write(data);
         writer.flush();
@@ -117,13 +117,12 @@ public class NormalConfig implements Config {
     }
 
 
-    private void replaceWithCopy(String file,String copy){
+    private void replaceWithCopy(String file, String copy) {
         File orin = new File(file);
         orin.delete();
         orin = new File(copy);
         orin.renameTo(new File(file));
     }
-
 
 
     private Map<String, String> readAllConfigMap() {
@@ -139,15 +138,18 @@ public class NormalConfig implements Config {
     @SneakyThrows
     private List<String> getConfigFileList() {
         checkMetaFileExist(meta);
-        BufferedReader reader = new BufferedReader(new FileReader(meta));
-        String temp;
-        List<String> res = new ArrayList<>();
-        while ((temp = reader.readLine()) != null) {
-            if (!temp.trim().equals("")) {
-                res.add(getValue(temp));
+        List<String> res = null;
+        for (String file : meta) {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String temp;
+            res = new ArrayList<>();
+            while ((temp = reader.readLine()) != null) {
+                if (!temp.trim().equals("")) {
+                    res.add(getValue(temp));
+                }
             }
+            reader.close();
         }
-        reader.close();
         return res;
     }
 
@@ -168,10 +170,10 @@ public class NormalConfig implements Config {
     @SneakyThrows
     private String getValue(String data) {
         String[] cut = data.split("=");
-        if(cut.length > 1){
+        if (cut.length > 1) {
             return cut[1].trim();
-        }else {
-            throw new ConfigException(ConfigEnum.CE_004.getCode(),ConfigEnum.CE_004.getMsg());
+        } else {
+            throw new ConfigException(ConfigEnum.CE_004.getCode(), ConfigEnum.CE_004.getMsg());
         }
     }
 
@@ -188,10 +190,12 @@ public class NormalConfig implements Config {
     }
 
     @SneakyThrows
-    private void checkMetaFileExist(String meta) {
-        File metaFile = new File(meta);
-        if (!metaFile.exists()) {
-            throw new ConfigException(ConfigEnum.CE_001.getCode(), ConfigEnum.CE_001.getMsg());
+    private void checkMetaFileExist(String[] meta) {
+        for (String file : meta) {
+            File metaFile = new File(file);
+            if (!metaFile.exists()) {
+                throw new ConfigException(ConfigEnum.CE_001.getCode(), ConfigEnum.CE_001.getMsg());
+            }
         }
     }
 }

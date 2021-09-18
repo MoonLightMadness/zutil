@@ -47,7 +47,7 @@ public interface Config {
      * @date 2021-09-15 20:40
      * @version V1.0
      */
-    void setMeta(String metaFile);
+    void setMeta(String[] metaFile);
 
     /**
      * 刷新缓存

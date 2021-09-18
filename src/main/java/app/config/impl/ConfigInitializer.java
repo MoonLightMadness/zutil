@@ -6,6 +6,7 @@ import app.config.IConfigInitializer;
 import app.config.annotation.ConfigPath;
 import app.reflect.ReflectUtils;
 import app.system.Core;
+import app.utils.SimpleUtils;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -34,19 +35,23 @@ public class ConfigInitializer implements IConfigInitializer {
      * @version V1.0
      */
     @Override
-    public void loadConfigPath() {
-        String[] allPaths = ReflectUtils.scanPackage("app");
+    public void loadConfigPath(String[] packages) {
         try {
-            for (String path : allPaths){
-                Class clazz = Class.forName(path);
-                Annotation annotation = clazz.getAnnotation(ConfigPath.class);
-                if(annotation != null){
-                    changeVariable(annotation);
+            for (String package1:packages){
+                String[] allPaths = ReflectUtils.scanPackage(package1);
+                for (String path : allPaths) {
+                    if(!SimpleUtils.isEmptyString(path)){
+                        Class clazz = Class.forName(path);
+                        Annotation annotation = clazz.getAnnotation(ConfigPath.class);
+                        if (annotation != null) {
+                            changeVariable(annotation);
+                        }
+                    }
                 }
             }
         } catch (ClassNotFoundException | IllegalAccessException |
                 NoSuchMethodException | InvocationTargetException | NoSuchFieldException e) {
-            Core.log.info("未找到类,原因:{}",e);
+            Core.log.info("未找到类,原因:{}", e);
         }
     }
 
@@ -55,9 +60,11 @@ public class ConfigInitializer implements IConfigInitializer {
         ConfigPath configPath = (ConfigPath) annotation;
         String[] mapStrs = configPath.value();
         int count = 0;
-        for (String mapStr : mapStrs){
-            String newStr = systemConfig.read(mapStr);
-            mapStrs[count++] = newStr;
+        for (String mapStr : mapStrs) {
+            if(mapStr.startsWith("${") && mapStr.endsWith("}")){
+                String newStr = systemConfig.read(mapStr.substring(2,mapStr.length()-1));
+                mapStrs[count++] = newStr;
+            }
         }
         //获取这个代理实例所持有的 InvocationHandler
         InvocationHandler h = Proxy.getInvocationHandler(configPath);

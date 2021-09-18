@@ -15,7 +15,7 @@ public interface IConfigInitializer {
      * @date 2021-09-18 09:59
      * @version V1.0
      */
-    void loadConfigPath();
+    void loadConfigPath(String[] packages);
 
     /**
      * 从给的路径中加载配置

@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 
-@ConfigPath(value = {"sys.path"})
+@ConfigPath(value = {"${sys.path}"})
 public class playTest {
 
 
@@ -80,7 +80,7 @@ public class playTest {
     @Test
     public void test5(){
         ConfigInitializer configInitializer = new ConfigInitializer();
-        configInitializer.loadConfigPath();
+        configInitializer.loadConfigPath(new String[]{".","app"});
         ConfigPath configPath = playTest.class.getAnnotation(ConfigPath.class);
         System.out.println(Arrays.toString(configPath.value()));
     }

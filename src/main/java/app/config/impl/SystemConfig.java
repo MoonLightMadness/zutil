@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class SystemConfig implements Config {
 
-    private String meta = "./config/sys.txt";
+    private String[] meta = {"./config/sys.txt"};
 
     Map<String, String> sysCache;
 
@@ -34,8 +34,8 @@ public class SystemConfig implements Config {
      */
     @Override
     public String read(String property) {
-        checkMetaFileExist(meta);
-        return getSingleFileConfigMap(meta).get(property);
+        checkMetaFileExist(meta[0]);
+        return getSingleFileConfigMap(meta[0]).get(property);
     }
 
     @SneakyThrows
@@ -116,7 +116,7 @@ public class SystemConfig implements Config {
      * @version V1.0
      */
     @Override
-    public void setMeta(String metaFile) {
+    public void setMeta(String[] metaFile) {
         this.meta = metaFile;
     }
 

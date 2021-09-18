@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -75,7 +76,8 @@ public class ReflectUtils {
                 if (entry.getName().replace(SimpleUtils.getFilePathSeparator(), ".").startsWith(packageName)) {
                     File temp = new File(entry.getName());
                     if (entry.getName().endsWith(".class")) {
-                        sb.append(temp.getPath().replace(SimpleUtils.getFilePathSeparator(), ".").substring(0, temp.getPath().lastIndexOf('.'))).append("\n");
+                        String p = temp.getPath().replace(SimpleUtils.getFilePathSeparator(), ".").substring(0, temp.getPath().lastIndexOf('.'));
+                        sb.append(p).append("\n");
                     }
                 }
             }

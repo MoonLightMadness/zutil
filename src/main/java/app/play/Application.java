@@ -14,7 +14,7 @@ import java.util.Arrays;
 public class Application {
     public static void main(String[] args) {
         ConfigInitializer configInitializer = new ConfigInitializer();
-        configInitializer.loadConfigPath();
+        configInitializer.loadConfigPath(new String[]{".","app"});
         ConfigPath configPath = playTest.class.getAnnotation(ConfigPath.class);
         System.out.println(Arrays.toString(configPath.value()));
     }
