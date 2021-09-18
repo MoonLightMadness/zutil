@@ -28,8 +28,10 @@ public class playTest {
     @Test
     public void test2(){
         NormalConfig normalConfig = new NormalConfig();
-        normalConfig.update("test","uz111",normalConfig.read("sys.path"));
-        System.out.println(normalConfig.read("test"));
+        normalConfig.update("test.property","2",normalConfig.read("sys.path"));
+        System.out.println(normalConfig.read("test.property"));
+        normalConfig.refresh();
+        System.out.println(normalConfig.read("test.property"));
     }
 
     @Test

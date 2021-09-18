@@ -16,3 +16,5 @@ mail.pwd = ******
 mail.smtp = ******
 
 mail.receiver = ******
+
+test.property = 2

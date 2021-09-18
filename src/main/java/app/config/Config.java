@@ -49,4 +49,13 @@ public interface Config {
      */
     void setMeta(String metaFile);
 
+    /**
+     * 刷新缓存
+     * @return
+     * @author zhl
+     * @date 2021-09-18 09:49
+     * @version V1.0
+     */
+    void refresh();
+
 }

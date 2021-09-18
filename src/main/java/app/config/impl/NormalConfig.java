@@ -20,6 +20,13 @@ public class NormalConfig implements Config {
      */
     private String meta = "./config/meta.txt";
 
+    /**
+     * 缓存
+     * 目的在于加快配置器运行效率
+     * 可使用refresh()进行刷新
+     */
+    private Map<String, String> cache;
+
 
     @Override
     public void setMeta(String metaFile) {
@@ -29,8 +36,10 @@ public class NormalConfig implements Config {
     @SneakyThrows
     @Override
     public String read(String property) {
-        Map<String, String> map = readAllConfigMap();
-        String value = map.get(property);
+        if(cache == null){
+            refresh();
+        }
+        String value = cache.get(property);
         if (value == null) {
             throw new ConfigException(ConfigEnum.CE_002.getCode(), ConfigEnum.CE_002.getMsg());
         }
@@ -58,6 +67,19 @@ public class NormalConfig implements Config {
         String data = updateRead(key, newValue, path);
         writeToCopy(data,cpath);
         replaceWithCopy(path,cpath);
+    }
+
+    /**
+     * 刷新缓存
+     *
+     * @return
+     * @author zhl
+     * @date 2021-09-18 09:49
+     * @version V1.0
+     */
+    @Override
+    public void refresh() {
+        cache = readAllConfigMap();
     }
 
     @SneakyThrows
