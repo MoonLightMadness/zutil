@@ -37,8 +37,8 @@ public class ReflectUtils {
         if (workingPath.endsWith(".jar")) {
             paths = scanJarFile(workingPath, packageName).split("\n");
         } else {
-            workingPath = packageName;
-            paths = scanDirectory(workingPath).split("\n");
+            workingPath += packageName.replace(".", "\\")+"/";
+            paths = scanDirectory(workingPath.substring(1)).split("\n");
         }
         return paths;
     }
@@ -56,7 +56,7 @@ public class ReflectUtils {
                 sb.append(scanDirectory(directory + "/" + f));
             }
         } else {
-            if (file.getPath().endsWith(".java")) {
+            if (file.getPath().endsWith(".java") || file.getPath().endsWith(".class")) {
                 String path = file.getPath().replace(SimpleUtils.getFilePathSeparator(), ".").substring(6, file.getPath().lastIndexOf('.'));
                 path = path.substring(10);
                 sb.append(path).append("\n");
@@ -73,7 +73,8 @@ public class ReflectUtils {
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
-                if (entry.getName().replace(SimpleUtils.getFilePathSeparator(), ".").startsWith(packageName)) {
+                if ((entry.getName().replace(SimpleUtils.getFilePathSeparator(), ".").startsWith(packageName))) {
+                    System.out.println(entry.getName());
                     File temp = new File(entry.getName());
                     if (entry.getName().endsWith(".class")) {
                         String p = temp.getPath().replace(SimpleUtils.getFilePathSeparator(), ".").substring(0, temp.getPath().lastIndexOf('.'));

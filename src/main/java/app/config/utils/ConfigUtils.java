@@ -25,7 +25,7 @@ public class ConfigUtils {
      */
     public static Config getInstance(Class clazz){
         Config config = new NormalConfig();
-        ConfigPath configPath = (ConfigPath) clazz.getAnnotation(ConfigPath.class);
+        ConfigPath configPath = (ConfigPath) clazz.getDeclaredAnnotation(ConfigPath.class);
         if(configPath != null){
             config.setMeta(configPath.value());
         }
