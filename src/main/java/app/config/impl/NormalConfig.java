@@ -3,8 +3,6 @@ package app.config.impl;
 import app.config.Config;
 import app.config.enums.ConfigEnum;
 import app.config.exception.ConfigException;
-import com.sun.deploy.util.StringUtils;
-import com.sun.org.apache.xml.internal.utils.StringVector;
 import lombok.SneakyThrows;
 
 import java.io.*;
@@ -18,7 +16,7 @@ public class NormalConfig implements Config {
     /**
      * 元信息文件，具有默认路径
      */
-    private String[] meta = {"./config/sys.txt"};
+    private String[] meta = {"./config/meta.txt"};
 
     /**
      * 缓存
@@ -126,10 +124,8 @@ public class NormalConfig implements Config {
 
 
     private Map<String, String> readAllConfigMap() {
-        List<String> files = this.getConfigFileList();
         Map<String, String> res = new HashMap<>();
-        for (String file : files) {
-            System.out.println(file);
+        for (String file : meta) {
             checkFileExist(file);
             res.putAll(getSingleFileConfigMap(file));
         }
@@ -186,7 +182,7 @@ public class NormalConfig implements Config {
     private void checkFileExist(String meta) {
         File metaFile = new File(meta);
         if (!metaFile.exists()) {
-            throw new ConfigException(ConfigEnum.CE_003.getCode(), ConfigEnum.CE_003.getMsg());
+            throw new ConfigException(ConfigEnum.CE_003.getCode(), ConfigEnum.CE_003.getMsg()+":"+meta);
         }
     }
 

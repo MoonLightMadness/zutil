@@ -4,6 +4,7 @@ import app.bind.Bind;
 import app.bind.impl.ZBind;
 import app.config.IConfigInitializer;
 import app.config.annotation.ConfigPath;
+import app.config.utils.ConfigUtils;
 import app.reflect.ReflectUtils;
 import app.system.Core;
 import app.utils.SimpleUtils;
@@ -42,9 +43,9 @@ public class ConfigInitializer implements IConfigInitializer {
                 for (String path : allPaths) {
                     if(!SimpleUtils.isEmptyString(path)){
                         Class clazz = Class.forName(path);
-                        Annotation annotation = clazz.getAnnotation(ConfigPath.class);
-                        if (annotation != null) {
-                            changeVariable(annotation);
+                        ConfigPath configPath = (ConfigPath) clazz.getAnnotation(ConfigPath.class);
+                        if (configPath != null) {
+                            changeVariable(configPath);
                         }
                     }
                 }
@@ -55,9 +56,8 @@ public class ConfigInitializer implements IConfigInitializer {
         }
     }
 
-    private void changeVariable(Annotation annotation) throws IllegalAccessException, NoSuchMethodException,
+    private void changeVariable(ConfigPath configPath) throws IllegalAccessException, NoSuchMethodException,
             InvocationTargetException, NoSuchFieldException {
-        ConfigPath configPath = (ConfigPath) annotation;
         String[] mapStrs = configPath.value();
         int count = 0;
         for (String mapStr : mapStrs) {

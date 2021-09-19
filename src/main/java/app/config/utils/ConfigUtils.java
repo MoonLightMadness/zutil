@@ -2,6 +2,7 @@ package app.config.utils;
 
 import app.config.Config;
 import app.config.annotation.ConfigPath;
+import app.config.impl.ConfigInitializer;
 import app.config.impl.NormalConfig;
 
 /**
@@ -24,7 +25,7 @@ public class ConfigUtils {
      */
     public static Config getInstance(Class clazz){
         Config config = new NormalConfig();
-        ConfigPath configPath = clazz.getClass().getAnnotation(ConfigPath.class);
+        ConfigPath configPath = (ConfigPath) clazz.getAnnotation(ConfigPath.class);
         if(configPath != null){
             config.setMeta(configPath.value());
         }
