@@ -179,6 +179,33 @@ public class SimpleUtils {
         return null;
     }
 
+    /**
+     * 执行Bash文件
+     * @param bashPath bash路径
+     * @return @return {@link String }
+     * @author zhl
+     * @date 2021-09-20 01:00
+     * @version V1.0
+     */
+    public static String callBash(String bashPath){
+        try {
+            Process p;
+            p = Runtime.getRuntime().exec(bashPath);
+            p.waitFor();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), Charset.forName("gbk")));
+            String temp;
+            StringBuilder builder = new StringBuilder();
+            while ((temp = reader.readLine()) != null) {
+                builder.append(temp).append("\n");
+            }
+            p.destroy();
+            return builder.toString();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     /**
      * 将字节数组列表合并成一个字节数组
