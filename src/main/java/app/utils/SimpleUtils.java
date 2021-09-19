@@ -289,7 +289,7 @@ public class SimpleUtils {
     public static void writeFile(String path, byte[] content) {
         File file = new File(path);
         if (!file.exists()) {
-            log.error(null, "can not find {}", path);
+            log.error("can not find {}", path);
         }
         try {
             FileOutputStream fos = new FileOutputStream(file, true);
