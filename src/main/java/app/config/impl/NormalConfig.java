@@ -129,6 +129,7 @@ public class NormalConfig implements Config {
         List<String> files = this.getConfigFileList();
         Map<String, String> res = new HashMap<>();
         for (String file : files) {
+            System.out.println(file);
             checkFileExist(file);
             res.putAll(getSingleFileConfigMap(file));
         }

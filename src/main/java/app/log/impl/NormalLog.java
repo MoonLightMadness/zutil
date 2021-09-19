@@ -2,6 +2,7 @@ package app.log.impl;
 
 import app.config.Config;
 import app.config.impl.NormalConfig;
+import app.config.impl.SystemConfig;
 import app.log.Log;
 import lombok.SneakyThrows;
 
@@ -15,7 +16,7 @@ import java.util.Locale;
 
 public class NormalLog implements Log {
 
-    private Config config = new NormalConfig();
+    private Config config = new SystemConfig();
 
     private StringBuilder logBuilder = new StringBuilder();
 

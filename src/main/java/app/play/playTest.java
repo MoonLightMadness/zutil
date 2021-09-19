@@ -80,7 +80,7 @@ public class playTest {
     @Test
     public void test5(){
         ConfigInitializer configInitializer = new ConfigInitializer();
-        configInitializer.loadConfigPath(new String[]{".","app"});
+        configInitializer.loadConfigPath(new String[]{"."});
         ConfigPath configPath = playTest.class.getAnnotation(ConfigPath.class);
         System.out.println(Arrays.toString(configPath.value()));
     }
