@@ -57,8 +57,9 @@ public class ReflectUtils {
             }
         } else {
             if (file.getPath().endsWith(".java") || file.getPath().endsWith(".class")) {
-                String path = file.getPath().replace(SimpleUtils.getFilePathSeparator(), ".").substring(6, file.getPath().lastIndexOf('.'));
-                path = path.substring(10);
+                String path = file.getPath().replace(SimpleUtils.getFilePathSeparator(),".");
+                path = path.split("classes")[1].substring(1);
+                path = path.substring(0,path.lastIndexOf("."));
                 sb.append(path).append("\n");
             }
         }
