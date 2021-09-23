@@ -1,11 +1,9 @@
 package app.log.impl;
 
 import app.config.Config;
-import app.config.impl.NormalConfig;
 import app.config.impl.SystemConfig;
 import app.log.Log;
 import lombok.SneakyThrows;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,7 +16,7 @@ public class NormalLog implements Log {
 
     private Config config = new SystemConfig();
 
-    private StringBuilder logBuilder = new StringBuilder();
+    private volatile StringBuilder logBuilder = new StringBuilder();
 
     private String preSave;
 
@@ -29,9 +27,11 @@ public class NormalLog implements Log {
 
     @Override
     public void info(String msg, Object... args) {
-        messageHandler(msg, args);
-        logMsgConstructor("info");
-        save();
+        synchronized (NormalLog.class){
+            messageHandler(msg, args);
+            logMsgConstructor("info");
+            save();
+        }
     }
 
     @Override
@@ -46,7 +46,7 @@ public class NormalLog implements Log {
         checkLogFileExist();
         checkLogDate();
         saveToLog(preSave);
-        preSave = null;
+        logBuilder.delete(0,logBuilder.length());
     }
 
     private void logMsgConstructor(String type) {

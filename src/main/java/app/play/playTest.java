@@ -4,6 +4,8 @@ import app.config.annotation.ConfigPath;
 import app.config.impl.ConfigInitializer;
 import app.config.impl.NormalConfig;
 import app.log.LogFactory;
+import app.net.NioServerSelector;
+import app.utils.ThreadUitls;
 import org.junit.Test;
 
 import java.io.File;
@@ -90,6 +92,18 @@ public class playTest {
         Method[] methods = ConfigPath.class.getMethods();
         for (Method method:methods){
             System.out.println(method.getName()+" "+ Arrays.toString(method.getParameterTypes()));
+        }
+    }
+
+    @Test
+    public void test7(){
+        NioServerSelector selector = new NioServerSelector();
+        selector.accept();
+        selector.read();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
