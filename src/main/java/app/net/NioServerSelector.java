@@ -43,8 +43,7 @@ public class NioServerSelector {
     }
 
     public void read(){
-        //ThreadUitls.submit(receiver);
-        new Thread(receiver).start();
+        ThreadUitls.submit(receiver);
         log.info("Receiver启动");
     }
 
