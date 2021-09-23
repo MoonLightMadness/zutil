@@ -23,8 +23,11 @@ public class NioReceiver implements Runnable{
 
     private NioMessageQueue queue;
 
-    public NioReceiver(Selector selector){
+    private NioAccepter accepter;
+
+    public NioReceiver(Selector selector,NioAccepter accepter){
         this.selector = selector;
+        this.accepter = accepter;
     }
 
     /**
@@ -40,18 +43,26 @@ public class NioReceiver implements Runnable{
      */
     @Override
     public void run() {
-        try {
-            int num = selector.select();
-            Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
-            while (iterator.hasNext()){
-                SelectionKey key = iterator.next();
-                byte[] data = SimpleUtils.receiveDataInNIO((SocketChannel) key.channel());
-                queue.put((SocketChannel) key.channel(),data);
-                iterator.remove();
+        while (true){
+            try {
+                int num = selector.select();
+                log.info("收到{}个请求",num);
+                Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
+                while (iterator.hasNext()){
+                    SelectionKey key = iterator.next();
+                    if(key.isAcceptable()){
+                        accepter.run();
+                    }
+                    if(key.isReadable()){
+                        byte[] data = SimpleUtils.receiveDataInNIO((SocketChannel) key.channel());
+                        queue.put((SocketChannel) key.channel(),data);
+                    }
+                    iterator.remove();
+                }
+            } catch (IOException e) {
+                log.error("发生错误，原因:{}",e);
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            log.error("发生错误，原因:{}",e);
-            e.printStackTrace();
         }
     }
 

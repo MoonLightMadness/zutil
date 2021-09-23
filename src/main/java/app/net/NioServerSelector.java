@@ -35,7 +35,6 @@ public class NioServerSelector {
 
     public NioServerSelector(String ip, String port) {
         init(ip, port);
-        log.info("ServerSelector启动");
     }
 
     public void accept() {
@@ -44,7 +43,8 @@ public class NioServerSelector {
     }
 
     public void read(){
-        ThreadUitls.submit(receiver);
+        //ThreadUitls.submit(receiver);
+        new Thread(receiver).start();
         log.info("Receiver启动");
     }
 
@@ -65,9 +65,10 @@ public class NioServerSelector {
             selector = Selector.open();
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             accepter = new NioAccepter(selector, serverSocketChannel);
-            receiver = new NioReceiver(selector);
+            receiver = new NioReceiver(selector,accepter);
             queue = new NioMessageQueue();
             receiver.setQueue(queue);
+            log.info("ServerSelector启动");
         } catch (IOException e) {
             log.error("发生错误，原因:{}", e);
             e.printStackTrace();

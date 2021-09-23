@@ -7,6 +7,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @ClassName : app.net.NioAccepter
@@ -24,9 +26,12 @@ public class NioAccepter implements Runnable {
 
     private Log log = Core.log;
 
+    private List<SocketChannel> channels;
+
     public NioAccepter(Selector selector,ServerSocketChannel serverSocketChannel){
         this.selector = selector;
         this.serverSocketChannel = serverSocketChannel;
+        channels = new ArrayList<>();
     }
 
     public void shutdown(){
@@ -46,16 +51,15 @@ public class NioAccepter implements Runnable {
      */
     @Override
     public void run() {
-        while (enabled){
-            try {
-                SocketChannel channel = serverSocketChannel.accept();
-                channel.configureBlocking(false);
-                channel.register(selector, SelectionKey.OP_READ);
-                log.info("{}连接",channel.socket().getInetAddress());
-            } catch (IOException e) {
-                log.error("发生错误，原因:{}",e);
-                e.printStackTrace();
-            }
+        try {
+            SocketChannel channel = serverSocketChannel.accept();
+            channel.configureBlocking(false);
+            channel.register(selector, SelectionKey.OP_READ);
+            channels.add(channel);
+            log.info("{}连接",channel.socket().getRemoteSocketAddress());
+        } catch (IOException e) {
+            log.error("发生错误，原因:{}",e);
+            e.printStackTrace();
         }
     }
 }

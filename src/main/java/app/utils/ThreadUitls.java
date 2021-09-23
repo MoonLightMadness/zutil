@@ -32,7 +32,7 @@ public class ThreadUitls {
         };
         //初始化线程池
         singleThreadPool = new ThreadPoolExecutor(16, 128,
-                0L, TimeUnit.MILLISECONDS,
+                10000L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
     }
 

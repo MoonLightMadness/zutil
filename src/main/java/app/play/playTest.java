@@ -11,6 +11,10 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 
@@ -98,11 +102,24 @@ public class playTest {
     @Test
     public void test7(){
         NioServerSelector selector = new NioServerSelector();
-        selector.accept();
+        //selector.accept();
         selector.read();
+
         try {
+            SocketChannel channel = SocketChannel.open();
+            //channel.configureBlocking(false);
+            System.out.println(channel.connect(new InetSocketAddress("127.0.0.1",10010)));
+            Thread.sleep(1000);
+            byte[] data = "Hello".getBytes(StandardCharsets.UTF_8);
+            ByteBuffer buffer = ByteBuffer.allocate(data.length);
+            buffer.put(data);
+            buffer.flip();
+
+            int num = channel.write(buffer);
+            Thread.sleep(100);
+            System.out.println(selector.getQueue().get());
             Thread.sleep(5000);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
     }
