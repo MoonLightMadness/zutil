@@ -1,10 +1,16 @@
 package app.reflect;
 
 
+import app.reflect.annotation.Authority;
+import app.reflect.annotation.Path;
+import app.reflect.container.Indicators;
+import app.reflect.domain.ReflectIndicator;
+import app.reflect.enums.AuthorityEnum;
 import app.utils.SimpleUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Arrays;
@@ -65,6 +71,63 @@ public class ReflectUtils {
         }
         return sb.toString();
     }
+
+
+    /**
+     * 搜索给定包名下的所有类，并找出具有@Path注解的类以及该类下同样具有该注解的方法，数据存入容器中
+     * @param packageName 包名
+     * @param indicator   反射容器
+     * @return
+     * @author zhl
+     * @date 2021-09-24 15:15
+     * @version V1.0
+     */
+    public static void constructReflectIndicator(String packageName, Indicators indicator) {
+        ReflectIndicator temp = null;
+        String[] classes = ReflectUtils.scanPackage(packageName);
+        Class clazz = null;
+        for (String className : classes){
+            try {
+                clazz = Class.forName(className);
+            } catch (Exception e) {
+
+            }
+            if (clazz != null && clazz.isAnnotationPresent(Path.class)) {
+                Path classPath = (Path) clazz.getDeclaredAnnotation(Path.class);
+                Method[] methods = clazz.getDeclaredMethods();
+                for (Method method : methods) {
+                    method.setAccessible(true);
+                    if (method.isAnnotationPresent(Path.class)) {
+                        Path methodPath = method.getDeclaredAnnotation(Path.class);
+                        temp = new ReflectIndicator();
+                        temp.setClassPath(className);
+                        temp.setMethodName(method.getName());
+                        temp.setParameterTypes(generateParameters(method));
+                        temp.setRelativePath(classPath.value() + methodPath.value());
+                        //判断有无权限注解
+                        if (method.isAnnotationPresent(Authority.class)) {
+                            Authority authority = method.getDeclaredAnnotation(Authority.class);
+                            temp.setAuthority(authority.value());
+                        } else {
+                            //如果没有权限注解,则添加默认权限
+                            temp.setAuthority(AuthorityEnum.NORMAL.msg());
+                        }
+                        indicator.add(temp);
+                    }
+                }
+            }
+        }
+    }
+
+    private static String[] generateParameters(Method method) {
+        String[] paras = new String[method.getParameterCount()];
+        int count = 0;
+        for (Class clazz : method.getParameterTypes()) {
+            paras[count++] = clazz.getName();
+        }
+        return paras;
+    }
+
 
     private static String scanJarFile(String path, String packageName) {
         File f = new File(path);
