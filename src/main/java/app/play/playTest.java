@@ -3,8 +3,13 @@ package app.play;
 import app.config.annotation.ConfigPath;
 import app.config.impl.ConfigInitializer;
 import app.config.impl.NormalConfig;
+import app.game.ProgressBar;
 import app.log.LogFactory;
 import app.net.NioServerSelector;
+import app.reflect.ReflectUtils;
+import app.reflect.annotation.Path;
+import app.reflect.container.Indicators;
+import app.utils.MathUtils;
 import app.utils.ThreadUitls;
 import org.junit.Test;
 
@@ -16,9 +21,11 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.UUID;
 
 
 @ConfigPath(value = {"${sys.path}"})
+@Path("/playTest")
 public class playTest {
 
 
@@ -122,6 +129,21 @@ public class playTest {
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    @Path("/test8")
+    public void test8(){
+        Indicators indicators = new Indicators();
+        indicators.initialize();
+        ReflectUtils.constructReflectIndicator(".",indicators);
+        System.out.println(indicators.get("/playTest/test8"));
+    }
+
+    @Test
+    public void test9(){
+        String exp = "5 + (18 + 3) * 5 - 2";
+        System.out.println(MathUtils.ExpressionInfix2Suffix(exp));
     }
 
     private String getStackTrace(Exception e){
