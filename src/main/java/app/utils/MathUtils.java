@@ -22,9 +22,9 @@ public class MathUtils {
      * @date 2021-09-24 16:12
      * @version V1.0
      */
-    public static String ExpressionInfix2Suffix(String infix){
+    public static List<String> ExpressionInfix2Suffix(String infix){
         List<String> lexp = parseExpression(infix);
-        StringBuilder suffix = new StringBuilder();
+        List<String> suffix = new ArrayList<>();
         Stack<String> stack = new Stack<>();
         for (String c : lexp) {
             //如果是左括号，直接入栈
@@ -36,7 +36,7 @@ public class MathUtils {
             if(")".equals(c)){
                 String temp;
                 while (!stack.empty() && !"(".equals((temp = stack.pop()))){
-                    suffix.append(temp);
+                    suffix.add(temp);
                 }
                 continue;
             }
@@ -50,8 +50,9 @@ public class MathUtils {
                     }else {
                         //否则需要不断出栈直到栈顶为左括号或为空
                         while (!stack.empty() && !"(".equals(stack.peek())){
-                            suffix.append(stack.pop());
+                            suffix.add(stack.pop());
                         }
+                        stack.add(c);
                     }
                 }
                 continue;
@@ -65,21 +66,22 @@ public class MathUtils {
                         stack.add(c);
                     }else {
                         while (!"+".equals(stack.peek()) || !"-".equals(stack.peek()) || !"(".equals(stack.peek())){
-                            suffix.append(stack.pop());
+                            suffix.add(stack.pop());
                         }
+                        stack.add(c);
                     }
                 }
                 continue;
             }
-            suffix.append(c);
+            suffix.add(c);
         }
         while (!stack.empty()){
-            suffix.append(stack.pop());
+            suffix.add(stack.pop());
         }
-        return suffix.toString();
+        return suffix;
     }
 
-    private static List<String> parseExpression(String exp){
+    public static List<String> parseExpression(String exp){
         char[] cexp = exp.toCharArray();
         List<String> res = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
@@ -107,20 +109,31 @@ public class MathUtils {
     }
 
 
-    private static boolean priority(char c1 , char c2){
-        if((c1 == '*' || c1 == '/') && (c2 == '+' || c2 == '-')){
-            return true;
+    public static Float calculate(String exp){
+        List<String> lexp = ExpressionInfix2Suffix(exp);
+        Stack<String> stack = new Stack<>();
+        for (String s : lexp){
+            if(!"+".equals(s) && !"-".equals(s) && !"*".equals(s) && !"/".equals(s)){
+                stack.add(s);
+                continue;
+            }
+            float a = Float.parseFloat(stack.pop());
+            float b = Float.parseFloat(stack.pop());
+            if("+".equals(s)){
+                stack.add(String.valueOf(a+b));
+            }
+            if("-".equals(s)){
+                stack.add(String.valueOf(b-a));
+            }
+            if("*".equals(s)){
+                stack.add(String.valueOf(b*a));
+            }
+            if("/".equals(s)){
+                stack.add(String.valueOf(b/a));
+            }
         }
-        if((c1 == '*' || c1 == '/') && (c2 == '*' || c2 == '/')){
-            return false;
-        }
-        if((c1 == '+' || c1 == '-') && (c2 == '*' || c2 == '/')){
-            return false;
-        }
-        if((c1 == '+' || c1 == '-') && (c2 == '+' || c2 == '-')){
-            return false;
-        }
-        return false;
+        return Float.parseFloat(stack.pop());
     }
+
 
 }

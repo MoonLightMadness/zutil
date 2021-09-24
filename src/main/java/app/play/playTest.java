@@ -143,7 +143,7 @@ public class playTest {
     @Test
     public void test9(){
         String exp = "5 + (18 + 3) * 5 - 2";
-        System.out.println(MathUtils.ExpressionInfix2Suffix(exp));
+        System.out.println(MathUtils.calculate(exp));
     }
 
     private String getStackTrace(Exception e){
