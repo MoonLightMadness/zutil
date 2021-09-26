@@ -6,6 +6,7 @@ import app.config.impl.NormalConfig;
 import app.game.ProgressBar;
 import app.log.LogFactory;
 import app.net.NioServerSelector;
+import app.net.WorkTrigger;
 import app.reflect.ReflectUtils;
 import app.reflect.annotation.Path;
 import app.reflect.container.Indicators;
@@ -108,6 +109,10 @@ public class playTest {
 
     @Test
     public void test7(){
+        Indicators indicators = new Indicators();
+        indicators.initialize();
+        ReflectUtils.constructReflectIndicator("app",indicators);
+
         NioServerSelector selector = new NioServerSelector();
         //selector.accept();
         selector.read();
@@ -117,14 +122,28 @@ public class playTest {
             //channel.configureBlocking(false);
             System.out.println(channel.connect(new InetSocketAddress("127.0.0.1",10010)));
             Thread.sleep(1000);
-            byte[] data = "Hello".getBytes(StandardCharsets.UTF_8);
-            ByteBuffer buffer = ByteBuffer.allocate(data.length);
-            buffer.put(data);
+            String data = "POST /Test/test8 HTTP/1.1\n" +
+                    "Content-Type: application/json\n" +
+                    "User-Agent: PostmanRuntime/7.28.1\n" +
+                    "Accept: */*\n" +
+                    "Postman-Token: 79577fc3-5568-4d1b-9afd-e4d7cb7a46e2\n" +
+                    "Host: 127.0.0.1:9004\n" +
+                    "Accept-Encoding: gzip, deflate, br\n" +
+                    "Connection: keep-alive\n" +
+                    "Content-Length: 36\n" +
+                    "\n" +
+                    "{\n" +
+                    "\n" +
+                    "\n \"test\":\" TTT \"\n"+
+                    "}";
+            byte[] bdata = data.getBytes(StandardCharsets.UTF_8);
+            ByteBuffer buffer = ByteBuffer.allocate(bdata.length);
+            buffer.put(bdata);
             buffer.flip();
-
             int num = channel.write(buffer);
             Thread.sleep(100);
-            System.out.println(selector.getQueue().get());
+            WorkTrigger workTrigger = new WorkTrigger(selector.getQueue(),indicators);
+            workTrigger.run();
             Thread.sleep(5000);
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
