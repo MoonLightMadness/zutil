@@ -1,6 +1,8 @@
 package app.net;
 
 import app.log.Log;
+import app.reflect.ReflectUtils;
+import app.reflect.container.Indicators;
 import app.system.Core;
 import app.utils.ThreadUitls;
 import java.io.IOException;
@@ -26,6 +28,8 @@ public class NioServerSelector {
     private NioReceiver receiver;
 
     private NioMessageQueue queue;
+
+    private Indicators indicators;
 
     private Log log = Core.log;
 
@@ -58,6 +62,7 @@ public class NioServerSelector {
 
     private void init(String ip, String port) {
         try {
+            initIndicators();
             serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.bind(new InetSocketAddress(ip, Integer.parseInt(port)));
@@ -67,10 +72,26 @@ public class NioServerSelector {
             receiver = new NioReceiver(selector,accepter);
             queue = new NioMessageQueue();
             receiver.setQueue(queue);
+            workerOnline();
             log.info("ServerSelector启动");
         } catch (IOException e) {
             log.error("发生错误，原因:{}", e);
             e.printStackTrace();
         }
+    }
+
+    private void workerOnline(){
+        WorkTrigger workTrigger1 = new WorkTrigger(queue, indicators);
+        WorkTrigger workTrigger2 = new WorkTrigger(queue, indicators);
+        WorkTrigger workTrigger3 = new WorkTrigger(queue, indicators);
+        ThreadUitls.submit(workTrigger1);
+        ThreadUitls.submit(workTrigger2);
+        ThreadUitls.submit(workTrigger3);
+    }
+
+    private void initIndicators(){
+        indicators = new Indicators();
+        indicators.initialize();
+        ReflectUtils.constructReflectIndicator(".", indicators);
     }
 }

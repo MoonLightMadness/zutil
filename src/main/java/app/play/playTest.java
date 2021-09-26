@@ -109,9 +109,6 @@ public class playTest {
 
     @Test
     public void test7() {
-        Indicators indicators = new Indicators();
-        indicators.initialize();
-        ReflectUtils.constructReflectIndicator("app", indicators);
 
         NioServerSelector selector = new NioServerSelector();
         //selector.accept();
@@ -145,12 +142,6 @@ public class playTest {
 //                channel.write(buffer);
 //                Thread.sleep(100);
 //            }
-            WorkTrigger workTrigger1 = new WorkTrigger(selector.getQueue(), indicators);
-            WorkTrigger workTrigger2 = new WorkTrigger(selector.getQueue(), indicators);
-            WorkTrigger workTrigger3 = new WorkTrigger(selector.getQueue(), indicators);
-            ThreadUitls.submit(workTrigger1);
-            ThreadUitls.submit(workTrigger2);
-            ThreadUitls.submit(workTrigger3);
             Thread.sleep(1000);
 
             Thread.sleep(50000);

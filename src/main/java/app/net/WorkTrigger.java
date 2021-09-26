@@ -67,6 +67,7 @@ public class WorkTrigger implements Runnable{
 
     private void invoke(Message message){
         try {
+            long start = System.currentTimeMillis();
             HttpRequestEntity httpRequestEntity = parseData(message.getData());
             ReflectIndicator reflectIndicator = indicators.get(httpRequestEntity.getArgs());
             Class clazz = Class.forName(reflectIndicator.getClassPath());
@@ -76,6 +77,7 @@ public class WorkTrigger implements Runnable{
             Object oc = clazz.newInstance();
             Object res = method.invoke(oc,obj);
             returnResult(res,message.getChannel());
+            log.info("环节结束，用时:{}ms",System.currentTimeMillis()-start);
         } catch (ClassNotFoundException e) {
             log.error("未找到该类:{}",e);
             e.printStackTrace();
