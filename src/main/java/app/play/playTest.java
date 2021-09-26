@@ -165,6 +165,20 @@ public class playTest {
         System.out.println(MathUtils.calculate(exp));
     }
 
+    @Test
+    public void test10(){
+        NioServerSelector selector = new NioServerSelector();
+        //selector.accept();
+        selector.read();
+        while (true){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private String getStackTrace(Exception e) {
         StringBuilder sb = new StringBuilder();
         sb.append(e.toString()).append("\n");
