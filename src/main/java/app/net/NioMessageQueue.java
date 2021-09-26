@@ -2,6 +2,8 @@ package app.net;
 
 import app.net.entity.Message;
 import java.nio.channels.SocketChannel;
+import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -13,16 +15,17 @@ import java.util.Queue;
  */
 public class NioMessageQueue {
 
-    private Queue<Message> queue;
+    private volatile Queue<Message> queue;
 
     public NioMessageQueue(){
-        queue = new PriorityQueue<>();
+        queue = new LinkedList<>();
     }
 
     public void put(SocketChannel channel,byte[] data){
         Message message = new Message();
         message.setChannel(channel);
         message.setData(data);
+        message.setTimeStamp(LocalDateTime.now().toString());
         synchronized (NioMessageQueue.class){
             queue.add(message);
         }

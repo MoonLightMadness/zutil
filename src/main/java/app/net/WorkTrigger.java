@@ -47,9 +47,16 @@ public class WorkTrigger implements Runnable{
      */
     @Override
     public void run() {
-        if(messageQueue.hasElement()){
-            Message message = messageQueue.get();
-            invoke(message);
+        while (true){
+            if(messageQueue.hasElement()){
+                Message message = messageQueue.get();
+                invoke(message);
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

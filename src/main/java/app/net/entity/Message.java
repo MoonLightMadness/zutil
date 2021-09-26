@@ -17,4 +17,6 @@ public class Message {
 
     private byte[] data;
 
+    private String timeStamp;
+
 }
