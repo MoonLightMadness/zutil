@@ -3,7 +3,7 @@ package app.game.vo;
 import lombok.Data;
 
 @Data
-public class UserOfflineReqVO {
+public class QueryUserOnlineReqVO {
 
     private String logInTime;
 

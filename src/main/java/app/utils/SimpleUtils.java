@@ -58,6 +58,19 @@ public class SimpleUtils {
         return (str == null || "".equals(str));
     }
 
+    /**
+     * 固定使用TimeFormatter.SEC_LEVEL
+     *
+     * @return
+     * @class *ClassName*
+     * @Description //TODO
+     * @Param
+     * @Author Zhang huai lan
+     * @Date 21:23 2021/3/31
+     **/
+    public static String getTimeStamp() {
+        return new SimpleDateFormat(TimeFormatter.SEC_LEVEL).format(new Date());
+    }
 
 
     /**

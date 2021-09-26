@@ -4,6 +4,7 @@ import app.config.Config;
 import app.config.impl.NormalConfig;
 import app.game.UserLogService;
 import app.game.cons.ServiceCenter;
+import app.game.domain.UserOnline;
 import app.game.vo.*;
 import app.mapper.annotation.TableName;
 import app.mapper.impl.Mapper;
@@ -32,8 +33,25 @@ public class UserLogServiceImpl implements UserLogService {
 
     @Override
     public BaseRspVO logout(UserLogoutReqVO userLogoutReqVO) {
+        ServiceCenter.mapper.setTableName(this.getClass());
+        UserOnline userOnline = (UserOnline) ServiceCenter.mapper.selectOne(new UserOnline(),userLogoutReqVO);
+        UserOfflineReqVO userOfflineReqVO = new UserOfflineReqVO();
+        userOfflineReqVO.setLogToken(userOnline.getLogToken());
+        userOfflineReqVO.setLogInTime(userOnline.getLogInTime());
+        ServiceCenter.userLogDataService.updateLogoffData(userOfflineReqVO);
+        BaseRspVO baseRspVO = new BaseRspVO();
+        baseRspVO.setCode("000000");
+        baseRspVO.setMsg("成功");
+        ServiceCenter.mapper.setTableName(this.getClass());
+        ServiceCenter.mapper.delete(userLogoutReqVO);
+        return baseRspVO;
+    }
 
-        return null;
+    @Override
+    public UserOnline getUserOnlineByTokenAndInTime(QueryUserOnlineReqVO queryUserOnlineReqVO) {
+        ServiceCenter.mapper.setTableName(this.getClass());
+        UserOnline userOnline = (UserOnline) ServiceCenter.mapper.selectOne(new UserOnline(),queryUserOnlineReqVO);
+        return userOnline;
     }
 
     private UserLoginRspVO checkLogData(UserLoginReqVO userLoginReqVO){
@@ -54,9 +72,14 @@ public class UserLogServiceImpl implements UserLogService {
                 userOnlineReqVO.setUserId(userQueryUserIdRspVO.getUserId());
                 userOnlineReqVO.setLogToken(userLoginRspVO.getLogToken());
                 userOnlineReqVO.setOnline("1");
-                userOnlineReqVO.setLogIn(LocalDateTime.now().toString());
+                userOnlineReqVO.setLogInTime(SimpleUtils.getTimeStamp());
+                userLoginRspVO.setLogInTime(userOnlineReqVO.getLogInTime());
                 ServiceCenter.mapper.setTableName(UserLogServiceImpl.class);
                 ServiceCenter.mapper.save(userOnlineReqVO);
+                UserLoginDataReqVO userLoginDataReqVO = new UserLoginDataReqVO();
+                userLoginDataReqVO.setUserId(userQueryUserIdRspVO.getUserId());
+                userLoginDataReqVO.setLogInTime(userOnlineReqVO.getLogInTime());
+                ServiceCenter.userLogDataService.updateLoginData(userLoginDataReqVO);
             } catch (Exception e) {
                 e.printStackTrace();
             }

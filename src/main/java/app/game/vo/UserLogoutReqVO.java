@@ -9,4 +9,6 @@ public class UserLogoutReqVO {
 
     private String logToken;
 
+    private String logInTime;
+
 }

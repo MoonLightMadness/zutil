@@ -7,4 +7,5 @@ public class UserLoginDataReqVO {
 
     private String userId;
 
+    private String logInTime;
 }

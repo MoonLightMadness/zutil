@@ -1,16 +1,16 @@
-package app.game.vo;
+package app.game.domain;
 
 import lombok.Data;
 
 @Data
-public class UserOnlineReqVO {
+public class UserOnline {
 
     private String userId;
-
-    private String logToken;
 
     private String online;
 
     private String logInTime;
+
+    private String logToken;
 
 }

@@ -38,6 +38,13 @@ public class UserDataController {
         return userLoginRspVO;
     }
 
+    @Path("/logout")
+    public BaseRspVO logout(UserLogoutReqVO userLogoutReqVO){
+        log.info("进入[登出]接口,入参:{}",userLogoutReqVO);
+        BaseRspVO baseRspVO = ServiceCenter.userLogService.logout(userLogoutReqVO);
+        return baseRspVO;
+    }
+
 
 
 

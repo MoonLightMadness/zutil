@@ -230,7 +230,7 @@ public class MysqlImpl<T> implements DataBase<T> {
                 statement.execute(command);
             }
         } catch (SQLException throwables) {
-            log.error(this.getClass().getName(),"error:{}---sql:{}",throwables.getMessage(),throwables.getSQLState());
+            log.error(this.getClass().getName(),"error:{}---sql:{}",throwables.getMessage(),command);
             throwables.printStackTrace();
         }
         close();
@@ -244,7 +244,7 @@ public class MysqlImpl<T> implements DataBase<T> {
                 statement.execute(command);
             }
         } catch (SQLException throwables) {
-            log.error(this.getClass().getName(),"error:{}---sql:{}",throwables.getMessage(),throwables.getSQLState());
+            log.error(this.getClass().getName(),"error:{}---sql:{}",throwables.getMessage(),command);
             throwables.printStackTrace();
         }
         close();

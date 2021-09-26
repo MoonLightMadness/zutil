@@ -1,9 +1,7 @@
 package app.game;
 
-import app.game.vo.BaseRspVO;
-import app.game.vo.UserLoginReqVO;
-import app.game.vo.UserLoginRspVO;
-import app.game.vo.UserLogoutReqVO;
+import app.game.domain.UserOnline;
+import app.game.vo.*;
 
 public interface UserLogService {
 
@@ -11,4 +9,5 @@ public interface UserLogService {
 
     BaseRspVO logout(UserLogoutReqVO userLogoutReqVO);
 
+    UserOnline getUserOnlineByTokenAndInTime(QueryUserOnlineReqVO queryUserOnlineReqVO);
 }

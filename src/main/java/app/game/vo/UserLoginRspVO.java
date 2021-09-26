@@ -9,4 +9,6 @@ public class UserLoginRspVO extends BaseRspVO {
 
     private String logToken;
 
+    private String logInTime;
+
 }
