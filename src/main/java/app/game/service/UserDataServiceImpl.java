@@ -52,6 +52,9 @@ public class UserDataServiceImpl implements UserDataService {
         return userQueryPasswordRspVO;
     }
 
-
-
+    @Override
+    public UserQueryUserIdRspVO getUserId(UserQueryUserIdReqVO userQueryUserIdReqVO) {
+        UserQueryUserIdRspVO userQueryUserIdRspVO = (UserQueryUserIdRspVO) mapper.selectOne(new UserQueryUserIdRspVO(),userQueryUserIdReqVO);
+        return userQueryUserIdRspVO;
+    }
 }

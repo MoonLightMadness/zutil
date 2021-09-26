@@ -9,4 +9,6 @@ public interface UserDataService {
 
     UserQueryPasswordRspVO getPassword(UserQueryPasswordReqVO userQueryPasswordReqVO);
 
+    UserQueryUserIdRspVO getUserId(UserQueryUserIdReqVO userQueryUserIdReqVO);
+
 }
