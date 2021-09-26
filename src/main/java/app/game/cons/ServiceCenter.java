@@ -6,6 +6,8 @@ import app.game.UserLogService;
 import app.game.service.UserDataServiceImpl;
 import app.game.service.UserLogDataServiceImpl;
 import app.game.service.UserLogServiceImpl;
+import app.mapper.impl.Mapper;
+import app.system.Core;
 
 public class ServiceCenter {
 
@@ -14,4 +16,6 @@ public class ServiceCenter {
     public static UserLogDataService userLogDataService = new UserLogDataServiceImpl();
 
     public static UserLogService userLogService = new UserLogServiceImpl();
+
+    public static Mapper mapper = new Mapper(UserDataServiceImpl.class, Core.configer.read("mysql.path"));
 }

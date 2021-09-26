@@ -3,6 +3,7 @@ package app.game.service;
 import app.config.Config;
 import app.config.impl.NormalConfig;
 import app.game.UserDataService;
+import app.game.cons.ServiceCenter;
 import app.game.domain.UserData;
 import app.game.vo.*;
 import app.log.Log;
@@ -17,14 +18,11 @@ import java.time.LocalDateTime;
 @TableName("user_config")
 public class UserDataServiceImpl implements UserDataService {
 
-    Mapper mapper = new Mapper();
-
     Config config = new NormalConfig();
 
     Log log = Core.log;
 
     public UserDataServiceImpl(){
-        mapper.initialize(UserDataServiceImpl.class,config.read("mysql.path"));
     }
 
     @Override
@@ -40,7 +38,8 @@ public class UserDataServiceImpl implements UserDataService {
             log.error("生成用户id错误,原因:{}",e);
             e.printStackTrace();
         }
-        mapper.save(userData);
+        ServiceCenter.mapper.setTableName(UserDataServiceImpl.class);
+        ServiceCenter.mapper.save(userData);
         UserRegisterRspVO userRegisterRspVO = new UserRegisterRspVO();
         SimpleUtils.copyProperties(userData,userRegisterRspVO);
         return userRegisterRspVO;
@@ -48,13 +47,15 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Override
     public UserQueryPasswordRspVO getPassword(UserQueryPasswordReqVO userQueryPasswordReqVO){
-        UserQueryPasswordRspVO userQueryPasswordRspVO = (UserQueryPasswordRspVO) mapper.selectOne(new UserQueryPasswordRspVO(),userQueryPasswordReqVO);
+        ServiceCenter.mapper.setTableName(UserDataServiceImpl.class);
+        UserQueryPasswordRspVO userQueryPasswordRspVO = (UserQueryPasswordRspVO) ServiceCenter.mapper.selectOne(new UserQueryPasswordRspVO(),userQueryPasswordReqVO);
         return userQueryPasswordRspVO;
     }
 
     @Override
     public UserQueryUserIdRspVO getUserId(UserQueryUserIdReqVO userQueryUserIdReqVO) {
-        UserQueryUserIdRspVO userQueryUserIdRspVO = (UserQueryUserIdRspVO) mapper.selectOne(new UserQueryUserIdRspVO(),userQueryUserIdReqVO);
+        ServiceCenter.mapper.setTableName(UserDataServiceImpl.class);
+        UserQueryUserIdRspVO userQueryUserIdRspVO = (UserQueryUserIdRspVO) ServiceCenter.mapper.selectOne(new UserQueryUserIdRspVO(),userQueryUserIdReqVO);
         return userQueryUserIdRspVO;
     }
 }

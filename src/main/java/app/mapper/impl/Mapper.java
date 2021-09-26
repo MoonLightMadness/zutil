@@ -32,6 +32,16 @@ public class Mapper extends AbstractMapper {
 
     private Config configer = new NormalConfig();
 
+    public Mapper(){}
+
+    public Mapper(Class clazz){
+        this.initialize(clazz);
+    }
+
+    public Mapper(Class clazz,String dbName){
+        this.initialize(clazz,dbName);
+    }
+
     /**
      * 初始化Mapper
      *
@@ -55,10 +65,10 @@ public class Mapper extends AbstractMapper {
     public void initialize(Class clazz,String dbName) {
         dataBase = DataBaseFactory.getInstance();
         dataBase.initialize(dbName);
-        getTableName(clazz);
+        setTableName(clazz);
     }
 
-    private void getTableName(Class clazz) {
+    public void setTableName(Class clazz) {
         TableName tableName = (TableName) clazz.getDeclaredAnnotation(TableName.class);
         if(tableName != null){
             this.tName = tableName.value();

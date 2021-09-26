@@ -15,12 +15,10 @@ import java.time.LocalDateTime;
 @TableName("user_online")
 public class UserLogServiceImpl implements UserLogService {
 
-    private Mapper mapper = new Mapper();
-
     private Config config = new NormalConfig();
 
     public UserLogServiceImpl(){
-        mapper.initialize(UserLogServiceImpl.class,config.read("mysql.path"));
+
     }
 
     @Override
@@ -57,7 +55,8 @@ public class UserLogServiceImpl implements UserLogService {
                 userOnlineReqVO.setLogToken(userLoginRspVO.getLogToken());
                 userOnlineReqVO.setOnline("1");
                 userOnlineReqVO.setLogIn(LocalDateTime.now().toString());
-                mapper.save(userOnlineReqVO);
+                ServiceCenter.mapper.setTableName(UserLogServiceImpl.class);
+                ServiceCenter.mapper.save(userOnlineReqVO);
             } catch (Exception e) {
                 e.printStackTrace();
             }
