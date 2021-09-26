@@ -5,6 +5,7 @@ package app.mapper.impl;
 import app.config.Config;
 import app.config.impl.NormalConfig;
 import app.db.DataBase;
+import app.db.DataBaseFactory;
 import app.db.impl.MysqlImpl;
 import app.db.impl.SqliteImpl;
 import app.mapper.AbstractMapper;
@@ -52,7 +53,7 @@ public class Mapper extends AbstractMapper {
      * @version V1.0
      */
     public void initialize(Class clazz,String dbName) {
-        dataBase = new MysqlImpl();
+        dataBase = DataBaseFactory.getInstance();
         dataBase.initialize(dbName);
         getTableName(clazz);
     }

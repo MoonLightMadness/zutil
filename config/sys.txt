@@ -19,6 +19,8 @@ mail.receiver = ******
 
 test.property = 2
 
+db.type = mysql
+
 mysql.path = localhost:3306/game_db
 
 mysql.user = root
