@@ -26,11 +26,13 @@ public class RTest {
     private Log log = Core.log;
 
     @Path("/test8")
-    public void test(testVO testVO){
+    public testVO test(testVO testVO){
         log.info("进入--[测试]接口,入参:{}",testVO);
         System.out.println("RT Run");
         System.out.println(testVO.getTest());
         log.info("[测试]接口--结束,出参:{}",testVO);
+        testVO.setTest("PP");
+        return testVO;
     }
 
 

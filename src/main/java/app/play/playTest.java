@@ -137,14 +137,14 @@ public class playTest {
                     "\n \"test\":\" TTT \"\n" +
                     "}";
             byte[] bdata = data.getBytes(StandardCharsets.UTF_8);
-            for (int i = 0; i < 10; i++) {
-                System.out.println(i);
-                ByteBuffer buffer = ByteBuffer.allocate(bdata.length);
-                buffer.put(bdata);
-                buffer.flip();
-                channel.write(buffer);
-                Thread.sleep(100);
-            }
+//            for (int i = 0; i < 10; i++) {
+//                System.out.println(i);
+//                ByteBuffer buffer = ByteBuffer.allocate(bdata.length);
+//                buffer.put(bdata);
+//                buffer.flip();
+//                channel.write(buffer);
+//                Thread.sleep(100);
+//            }
             WorkTrigger workTrigger1 = new WorkTrigger(selector.getQueue(), indicators);
             WorkTrigger workTrigger2 = new WorkTrigger(selector.getQueue(), indicators);
             WorkTrigger workTrigger3 = new WorkTrigger(selector.getQueue(), indicators);

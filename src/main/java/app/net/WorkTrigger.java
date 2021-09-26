@@ -2,6 +2,7 @@ package app.net;
 
 import app.http.HttpParser;
 import app.http.entity.HttpRequestEntity;
+import app.http.entity.HttpRespondEntity;
 import app.log.Log;
 import app.net.entity.Message;
 import app.parser.JSONTool;
@@ -9,8 +10,11 @@ import app.reflect.container.Indicators;
 import app.reflect.domain.ReflectIndicator;
 import app.system.Core;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -70,7 +74,8 @@ public class WorkTrigger implements Runnable{
             Object obj = JSONTool.getObject(httpRequestEntity.getBody().getBytes(StandardCharsets.UTF_8)
                     ,method.getParameterTypes()[0]);
             Object oc = clazz.newInstance();
-            method.invoke(oc,obj);
+            Object res = method.invoke(oc,obj);
+            returnResult(res,message.getChannel());
         } catch (ClassNotFoundException e) {
             log.error("未找到该类:{}",e);
             e.printStackTrace();
@@ -79,6 +84,24 @@ public class WorkTrigger implements Runnable{
             e.printStackTrace();
         }
 
+    }
+
+    private void returnResult(Object res, SocketChannel channel){
+        if(res != null){
+            HttpRespondEntity httpRespondEntity = new HttpRespondEntity();
+            byte[] bres = JSONTool.toJson(res);
+            httpRespondEntity.setBody(new String(bres));
+            byte[] respond = httpRespondEntity.toString().getBytes(StandardCharsets.UTF_8);
+            ByteBuffer buffer = ByteBuffer.allocate(respond.length);
+            buffer.put(respond);
+            buffer.flip();
+            try {
+                channel.write(buffer);
+                channel.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Method getMetod(Class clazz,String name){
