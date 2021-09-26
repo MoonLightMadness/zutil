@@ -16,7 +16,7 @@ public class NormalConfig implements Config {
     /**
      * 元信息文件，具有默认路径
      */
-    private String[] meta = {"./config/meta.txt"};
+    private String[] meta = {"./config/meta.txt","./config/sys.txt"};
 
     /**
      * 缓存
