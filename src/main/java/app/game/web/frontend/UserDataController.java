@@ -3,11 +3,14 @@ package app.game.web.frontend;
 
 import app.game.UserDataService;
 import app.game.cons.ServiceCenter;
+import app.game.domain.UserLogData;
 import app.game.service.UserDataServiceImpl;
 import app.game.vo.*;
 import app.log.Log;
 import app.reflect.annotation.Path;
 import app.system.Core;
+
+import java.util.List;
 
 @Path("/data/user")
 public class UserDataController {
@@ -45,7 +48,11 @@ public class UserDataController {
         return baseRspVO;
     }
 
-
+    @Path("/history")
+    public List<UserLogData> queryHistory(BaseUserLogDataQueryReqVO baseUserLogDataQueryReqVO){
+        List<UserLogData> res = ServiceCenter.baseUserLogDataService.getUserLogDataByUserId(baseUserLogDataQueryReqVO.getUserId());
+        return res;
+    }
 
 
 
