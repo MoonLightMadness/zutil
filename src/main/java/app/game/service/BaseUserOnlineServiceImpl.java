@@ -29,4 +29,13 @@ public class BaseUserOnlineServiceImpl implements BaseUserOnlineService {
         UserOnline userOnline = (UserOnline) ServiceCenter.mapper.selectOne(new UserOnline(),baseUserOnlineQueryReqVO);
         return userOnline;
     }
+
+    @Override
+    public boolean checkOnline(String logToken) {
+        UserOnline userOnline = this.getUserOnlineByLogToken(logToken);
+        if(userOnline.getUserId() != null){
+            return true;
+        }
+        return false;
+    }
 }

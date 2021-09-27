@@ -8,5 +8,5 @@ public interface BaseUserOnlineService {
 
     UserOnline getUserOnlineByLogToken(String logToken);
 
-
+    boolean checkOnline(String logToken);
 }
