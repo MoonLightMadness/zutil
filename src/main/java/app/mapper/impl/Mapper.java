@@ -157,7 +157,12 @@ public class Mapper extends AbstractMapper {
 
     @Override
     public Object[] selectList(Object object, Object condition) {
-        return dataBase.getObjects("SELECT " + getSelectString(object) + " FROM " + tName + " WHERE " + getWhereString(condition), tName, object.getClass());
+        String baseStr = "SELECT " + getSelectString(object) + " FROM " + tName;
+        String where = getWhereString(condition);
+        if(where != null){
+            baseStr += " WHERE " + getWhereString(condition);
+        }
+        return dataBase.getObjects(baseStr, tName, object.getClass());
     }
 
     @Override
@@ -195,21 +200,24 @@ public class Mapper extends AbstractMapper {
     }
 
     private String getWhereString(Object condition) {
-        Field[] fields = condition.getClass().getDeclaredFields();
-        StringBuilder sb = new StringBuilder();
-        try {
-            for (Field field : fields) {
-                field.setAccessible(true);
-                String str = convertPOJOToDBType(field.getName());
-                String value = (String) field.get(condition);
-                if (null != value) {
-                    sb.append(str).append("= '").append(value).append("' AND ");
+        if(condition != null){
+            Field[] fields = condition.getClass().getDeclaredFields();
+            StringBuilder sb = new StringBuilder();
+            try {
+                for (Field field : fields) {
+                    field.setAccessible(true);
+                    String str = convertPOJOToDBType(field.getName());
+                    String value = (String) field.get(condition);
+                    if (null != value) {
+                        sb.append(str).append("= '").append(value).append("' AND ");
+                    }
                 }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            return sb.substring(0, sb.length() - 4);
         }
-        return sb.substring(0, sb.length() - 4);
+        return null;
     }
 
     @Override
