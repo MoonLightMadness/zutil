@@ -4,6 +4,10 @@ import app.game.BaseCharacterConfigService;
 import app.game.cons.ServiceCenter;
 import app.game.dto.CharacterConfigDTO;
 import app.mapper.annotation.TableName;
+import app.utils.Packer;
+import org.junit.Test;
+
+import java.util.List;
 
 @TableName("character_config")
 public class BaseCharacterConfigServiceImpl implements BaseCharacterConfigService {
@@ -17,4 +21,15 @@ public class BaseCharacterConfigServiceImpl implements BaseCharacterConfigServic
         characterConfigDTO = (CharacterConfigDTO) ServiceCenter.mapper.selectOne(new CharacterConfigDTO(),characterConfigDTO);
         return characterConfigDTO;
     }
+
+
+    @Override
+    public List<CharacterConfigDTO> getAllConfig() {
+        ServiceCenter.mapper.setTableName(this.getClass());
+        Packer<CharacterConfigDTO> packer = new Packer<>();
+        List<CharacterConfigDTO> all = packer.pack(ServiceCenter.mapper.selectList(new CharacterConfigDTO(),null));
+        return all;
+    }
+
+
 }
