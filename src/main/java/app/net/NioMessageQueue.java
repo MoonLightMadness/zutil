@@ -39,11 +39,12 @@ public class NioMessageQueue {
 
     public Message get(){
         synchronized (NioMessageQueue.class){
-            if(queue.size() -1 < 0){
-                return null;
+            Message message = queue.poll();
+            if(message != null){
+                log.info("消息队列消息-1,目前队列中有{}条消息",queue.size()-1);
+                return message;
             }
-            log.info("消息队列消息-1,目前队列中有{}条消息",queue.size()-1);
-            return queue.poll();
+            return null;
         }
     }
 

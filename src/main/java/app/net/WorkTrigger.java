@@ -59,7 +59,9 @@ public class WorkTrigger implements Runnable{
         while (true){
             if(messageQueue.hasElement()){
                 Message message = messageQueue.get();
-                invoke(message);
+                if(message != null){
+                    invoke(message);
+                }
             }
             try {
                 Thread.sleep(10);

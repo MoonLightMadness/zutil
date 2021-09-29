@@ -57,7 +57,11 @@ public class NioReceiver implements Runnable{
                         if(key.isReadable()){
                             if(((SocketChannel) key.channel()).isConnected()){
                                 byte[] data = SimpleUtils.receiveDataInNIO((SocketChannel) key.channel());
-                                queue.put((SocketChannel) key.channel(),data);
+                                if(data.length > 0){
+                                    queue.put((SocketChannel) key.channel(),data);
+                                }else {
+                                    key.channel().close();
+                                }
                             }else {
                                 log.info("该链接无效");
                             }
