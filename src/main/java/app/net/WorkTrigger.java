@@ -89,15 +89,11 @@ public class WorkTrigger implements Runnable{
                 Object res = method.invoke(oc,obj);
                 returnResult(res,message.getChannel());
             }catch (Exception e){
-                System.out.println("出现错误1");
                 BaseExceptionRspVO baseExceptionRspVO = new BaseExceptionRspVO();
-                String msg = e.getMessage();
-                System.out.println("出现错误2");
+                String msg = e.getCause().getMessage();
                 baseExceptionRspVO.setCode(msg.split(" ")[0]);
                 baseExceptionRspVO.setMsg(msg.split(" ")[1]);
-                System.out.println("出现错误3");
                 returnResult(baseExceptionRspVO,message.getChannel());
-                System.out.println("出现错误4");
             }
             log.info("环节结束，用时:{}ms",System.currentTimeMillis()-start);
         } catch (ClassNotFoundException e) {
