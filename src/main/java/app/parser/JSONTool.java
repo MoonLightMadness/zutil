@@ -2,6 +2,7 @@ package app.parser;
 
 import app.log.Log;
 import app.log.impl.NormalLog;
+import app.utils.SimpleUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -27,17 +28,16 @@ public class JSONTool {
 
     public static Object getObject(byte[] data,Class c){
         try {
-            //System.out.println(new String(data));
             JSONObject obj = (JSONObject) JSONObject.parse(new String(data));
             Field[] fs = c.getDeclaredFields();
             Object entity = c.newInstance();
             for(Field f : fs){
                 f.setAccessible(true);
                 if(f.getType() == List.class){
-                    Class comp = f.getClass().getComponentType();
-                    System.out.println(comp.getName());
                     JSONArray array = JSONObject.parseArray(obj.getString(f.getName()));
-                    f.set(entity,array.toJavaList(comp));
+                    String name = f.getGenericType().getTypeName();
+                    Class lp = Class.forName(name.substring(name.indexOf("<")+1,name.length()-1));
+                    f.set(entity,array.toJavaList(lp));
                     continue;
                 }
                 //String prop = obj.getString(f.getName());
@@ -50,6 +50,8 @@ public class JSONTool {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             log.error(null,e.getMessage());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return null;
     }

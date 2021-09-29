@@ -3,6 +3,7 @@ package app.play;
 import app.game.domain.UserLogData;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**

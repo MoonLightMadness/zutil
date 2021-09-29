@@ -21,7 +21,10 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -204,8 +207,31 @@ public class playTest {
                 "    }\n" +
                 "]\n" +
                 "}";
-        TestPojo testPojo = (TestPojo) JSONTool.getObject(json.getBytes(StandardCharsets.UTF_8), TestPojo.class);
-        System.out.println(testPojo.getData().get(0).getUserId());
+        TestPojo testPojo;
+
+        for (int i =0 ;i<100;i++){
+            long start = System.currentTimeMillis();
+            testPojo = (TestPojo) JSONTool.getObject(json.getBytes(StandardCharsets.UTF_8), TestPojo.class);
+            System.out.println(System.currentTimeMillis() - start);
+        }
+
+    }
+    @Test
+    public void test12(){
+        TestPojo testPojo = new TestPojo();
+        Class clazz = testPojo.getClass();
+        try {
+            Object obj = clazz.newInstance();
+            Field[] fs = clazz.getDeclaredFields();
+            for (Field f : fs){
+                f.setAccessible(true);
+                System.out.println(f.getType().toString()+" "+f.getName());
+                System.out.println(f.getGenericType());
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private String getStackTrace(Exception e) {
