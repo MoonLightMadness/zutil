@@ -208,12 +208,8 @@ public class playTest {
                 "]\n" +
                 "}";
         TestPojo testPojo;
-
-        for (int i =0 ;i<100;i++){
-            long start = System.currentTimeMillis();
-            testPojo = (TestPojo) JSONTool.getObject(json.getBytes(StandardCharsets.UTF_8), TestPojo.class);
-            System.out.println(System.currentTimeMillis() - start);
-        }
+        testPojo = (TestPojo) JSONTool.getObject(json.getBytes(StandardCharsets.UTF_8), TestPojo.class);
+        System.out.println(new String(JSONTool.toJson(testPojo)));
 
     }
     @Test
