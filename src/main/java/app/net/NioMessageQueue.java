@@ -1,6 +1,9 @@
 package app.net;
 
+import app.log.Log;
 import app.net.entity.Message;
+import app.system.Core;
+
 import java.nio.channels.SocketChannel;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -15,6 +18,8 @@ import java.util.Queue;
  */
 public class NioMessageQueue {
 
+    private Log log = Core.log;
+
     private volatile Queue<Message> queue;
 
     public NioMessageQueue(){
@@ -28,13 +33,22 @@ public class NioMessageQueue {
         message.setTimeStamp(LocalDateTime.now().toString());
         synchronized (NioMessageQueue.class){
             queue.add(message);
+            log.info("消息队列消息+1,目前队列中有{}条消息",queue.size());
         }
     }
 
     public Message get(){
         synchronized (NioMessageQueue.class){
+            if(queue.size() -1 < 0){
+                return null;
+            }
+            log.info("消息队列消息-1,目前队列中有{}条消息",queue.size()-1);
             return queue.poll();
         }
+    }
+
+    public Queue<Message> getQueue(){
+        return this.queue;
     }
 
     public boolean hasElement(){

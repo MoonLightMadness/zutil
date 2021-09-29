@@ -1,6 +1,7 @@
 package app.net;
 
 import app.log.Log;
+import app.net.exception.MessageQueueMonitor;
 import app.reflect.ReflectUtils;
 import app.reflect.container.Indicators;
 import app.system.Core;
@@ -28,6 +29,8 @@ public class NioServerSelector {
     private NioReceiver receiver;
 
     private NioMessageQueue queue;
+
+    private MessageQueueMonitor messageQueueMonitor;
 
     private Indicators indicators;
 
@@ -71,6 +74,7 @@ public class NioServerSelector {
             accepter = new NioAccepter(selector, serverSocketChannel);
             receiver = new NioReceiver(selector,accepter);
             queue = new NioMessageQueue();
+            messageQueueMonitor = new MessageQueueMonitor(queue.getQueue());
             receiver.setQueue(queue);
             workerOnline();
             log.info("ServerSelector启动");
@@ -87,6 +91,7 @@ public class NioServerSelector {
         ThreadUitls.submit(workTrigger1);
         ThreadUitls.submit(workTrigger2);
         ThreadUitls.submit(workTrigger3);
+        ThreadUitls.submit(messageQueueMonitor);
     }
 
     private void initIndicators(){
