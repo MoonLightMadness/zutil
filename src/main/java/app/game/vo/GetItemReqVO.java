@@ -16,6 +16,6 @@ public class GetItemReqVO {
     private String itemId;
 
     @NotNull
-    private String userId;
+    private String logToken;
 
 }

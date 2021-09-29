@@ -18,6 +18,7 @@ public class BaseUserOnlineServiceImpl implements BaseUserOnlineService {
     public UserOnline getUserOnlieByUserId(String userId) {
         BaseUserOnlineQueryReqVO baseUserOnlineQueryReqVO = new BaseUserOnlineQueryReqVO();
         baseUserOnlineQueryReqVO.setUserId(userId);
+        ServiceCenter.mapper.setTableName(this.getClass());
         UserOnline userOnline = (UserOnline) ServiceCenter.mapper.selectOne(new UserOnline(),baseUserOnlineQueryReqVO);
         return userOnline;
     }
@@ -26,6 +27,7 @@ public class BaseUserOnlineServiceImpl implements BaseUserOnlineService {
     public UserOnline getUserOnlineByLogToken(String logToken) {
         BaseUserOnlineQueryReqVO baseUserOnlineQueryReqVO = new BaseUserOnlineQueryReqVO();
         baseUserOnlineQueryReqVO.setLogToken(logToken);
+        ServiceCenter.mapper.setTableName(this.getClass());
         UserOnline userOnline = (UserOnline) ServiceCenter.mapper.selectOne(new UserOnline(),baseUserOnlineQueryReqVO);
         return userOnline;
     }

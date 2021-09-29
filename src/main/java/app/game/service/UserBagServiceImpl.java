@@ -2,14 +2,16 @@ package app.game.service;
 
 import app.game.UserBagService;
 import app.game.cons.ServiceCenter;
-import app.game.domain.ItemConfig;
-import app.game.domain.UserBagItemData;
-import app.game.domain.UserBagMetaData;
-import app.game.domain.UserItem;
+import app.game.domain.*;
+import app.game.exception.UserException;
+import app.game.exception.UserExceptionEnum;
+import app.game.vo.BaseRspVO;
+import app.game.vo.GetItemReqVO;
 import app.mapper.annotation.TableName;
 import app.parser.JSONTool;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import lombok.SneakyThrows;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -34,11 +36,17 @@ public class UserBagServiceImpl implements UserBagService {
         return userBagItemData;
     }
 
+    @SneakyThrows
     @Override
-    public void getItem(ItemConfig itemConfig, String userId) {
+    public BaseRspVO getItem(ItemConfig itemConfig, GetItemReqVO getItemReqVO) {
+        BaseRspVO baseRspVO = new BaseRspVO();
         itemConfig = ServiceCenter.baseItemConfigService.getItemConfigByItemId(itemConfig.getItemId());
         boolean isExist = false;
-        UserBagItemData userBagItemData = getUserBagItemDataByUserId(userId);
+        UserOnline userOnline = ServiceCenter.baseUserOnlineService.getUserOnlineByLogToken(getItemReqVO.getLogToken());
+        if(userOnline == null){
+            throw new UserException(UserExceptionEnum.UEE_001.getId(),UserExceptionEnum.UEE_001.getMsg());
+        }
+        UserBagItemData userBagItemData = getUserBagItemDataByUserId(userOnline.getUserId());
         List<UserItem> items = userBagItemData.getBagData();
         for(UserItem item : items){
             if(item.getNum()!=null && item.getUserBagItemData().getItemId().equals(itemConfig.getItemId())){
@@ -54,6 +62,7 @@ public class UserBagServiceImpl implements UserBagService {
             items.add(userItem);
         }
         saveUserBagItemData(userBagItemData);
+        return baseRspVO;
     }
 
     @Override

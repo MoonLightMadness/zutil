@@ -1,5 +1,6 @@
 package app.net;
 
+import app.game.vo.BaseExceptionRspVO;
 import app.http.HttpParser;
 import app.http.entity.HttpRequestEntity;
 import app.http.entity.HttpRespondEntity;
@@ -84,13 +85,25 @@ public class WorkTrigger implements Runnable{
                 return;
             }
             Object oc = clazz.newInstance();
-            Object res = method.invoke(oc,obj);
-            returnResult(res,message.getChannel());
+            try {
+                Object res = method.invoke(oc,obj);
+                returnResult(res,message.getChannel());
+            }catch (Exception e){
+                System.out.println("出现错误1");
+                BaseExceptionRspVO baseExceptionRspVO = new BaseExceptionRspVO();
+                String msg = e.getMessage();
+                System.out.println("出现错误2");
+                baseExceptionRspVO.setCode(msg.split(" ")[0]);
+                baseExceptionRspVO.setMsg(msg.split(" ")[1]);
+                System.out.println("出现错误3");
+                returnResult(baseExceptionRspVO,message.getChannel());
+                System.out.println("出现错误4");
+            }
             log.info("环节结束，用时:{}ms",System.currentTimeMillis()-start);
         } catch (ClassNotFoundException e) {
             log.error("未找到该类:{}",e);
             e.printStackTrace();
-        } catch (InvocationTargetException | IllegalAccessException | InstantiationException e) {
+        } catch (IllegalAccessException | InstantiationException e) {
             log.error("发生错误,原因:{}",e);
             e.printStackTrace();
         }
