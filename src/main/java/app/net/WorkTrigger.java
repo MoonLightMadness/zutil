@@ -4,6 +4,9 @@ import app.http.HttpParser;
 import app.http.entity.HttpRequestEntity;
 import app.http.entity.HttpRespondEntity;
 import app.log.Log;
+import app.net.annotation.NotNull;
+import app.net.annotation.Valid;
+import app.net.entity.CheckRspVO;
 import app.net.entity.Message;
 import app.parser.JSONTool;
 import app.reflect.container.Indicators;
@@ -11,6 +14,7 @@ import app.reflect.domain.ReflectIndicator;
 import app.system.Core;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
@@ -74,6 +78,11 @@ public class WorkTrigger implements Runnable{
             Method method = getMetod(clazz,reflectIndicator.getMethodName());
             Object obj = JSONTool.getObject(httpRequestEntity.getBody().getBytes(StandardCharsets.UTF_8)
                     ,method.getParameterTypes()[0]);
+            CheckRspVO checkRspVO = checkValid(obj);
+            if(checkRspVO.getCode().equals("999999")){
+                returnResult(checkRspVO,message.getChannel());
+                return;
+            }
             Object oc = clazz.newInstance();
             Object res = method.invoke(oc,obj);
             returnResult(res,message.getChannel());
@@ -114,6 +123,28 @@ public class WorkTrigger implements Runnable{
             }
         }
         return null;
+    }
+
+    private CheckRspVO checkValid(Object obj){
+        CheckRspVO checkRspVO = new CheckRspVO();
+        try {
+            Field[] fields = obj.getClass().getDeclaredFields();
+            for (Field field : fields){
+                field.setAccessible(true);
+                if(field.isAnnotationPresent(NotNull.class)){
+                    Object test = field.get(obj);
+                    if(test == null){
+                        checkRspVO.setMsg(field.getName()+" 不能为空");
+                        checkRspVO.setCode("999999");
+                        return checkRspVO;
+                    }
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        checkRspVO.setCode("000000");
+        return checkRspVO;
     }
 
     private HttpRequestEntity parseData(byte[] data){

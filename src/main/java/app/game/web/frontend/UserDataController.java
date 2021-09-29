@@ -7,6 +7,7 @@ import app.game.domain.UserLogData;
 import app.game.service.UserDataServiceImpl;
 import app.game.vo.*;
 import app.log.Log;
+import app.net.annotation.Valid;
 import app.reflect.annotation.Path;
 import app.system.Core;
 
@@ -26,7 +27,7 @@ public class UserDataController {
      * @version V1.0
      */
     @Path("/register")
-    public UserRegisterRspVO register(UserRegisterReqVO userRegisterReqVO){
+    public UserRegisterRspVO register(@Valid UserRegisterReqVO userRegisterReqVO){
         log.info("进入[注册]接口--入参:{}",userRegisterReqVO);
         UserRegisterRspVO userRegisterRspVO = ServiceCenter.userDataService.register(userRegisterReqVO);
         log.info("[入参]接口执行完毕，出参:{}",userRegisterRspVO);

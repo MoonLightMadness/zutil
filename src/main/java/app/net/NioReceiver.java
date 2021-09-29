@@ -46,18 +46,20 @@ public class NioReceiver implements Runnable{
         while (true){
             try {
                 int num = selector.select();
-                log.info("收到{}个请求",num);
-                Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
-                while (iterator.hasNext()){
-                    SelectionKey key = iterator.next();
-                    if(key.isAcceptable()){
-                        accepter.run();
+                if(num > 0){
+                    log.info("收到{}个请求",num);
+                    Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
+                    while (iterator.hasNext()){
+                        SelectionKey key = iterator.next();
+                        if(key.isAcceptable()){
+                            accepter.run();
+                        }
+                        if(key.isReadable()){
+                            byte[] data = SimpleUtils.receiveDataInNIO((SocketChannel) key.channel());
+                            queue.put((SocketChannel) key.channel(),data);
+                        }
+                        iterator.remove();
                     }
-                    if(key.isReadable()){
-                        byte[] data = SimpleUtils.receiveDataInNIO((SocketChannel) key.channel());
-                        queue.put((SocketChannel) key.channel(),data);
-                    }
-                    iterator.remove();
                 }
             } catch (IOException e) {
                 log.error("发生错误，原因:{}",e);
