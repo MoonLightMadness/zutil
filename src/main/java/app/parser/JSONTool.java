@@ -40,6 +40,10 @@ public class JSONTool {
                     f.set(entity,array.toJavaList(lp));
                     continue;
                 }
+                if(!f.getType().getSimpleName().equals("String")){
+                    f.set(entity,getObject(obj.get(f.getName()).toString().getBytes(StandardCharsets.UTF_8),f.getType()));
+                    continue;
+                }
                 //String prop = obj.getString(f.getName());
                 f.set(entity,obj.get(f.getName()));
             }

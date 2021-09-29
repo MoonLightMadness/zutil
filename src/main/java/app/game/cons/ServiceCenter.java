@@ -25,5 +25,7 @@ public class ServiceCenter {
 
     public static BaseItemConfigService baseItemConfigService = new BaseItemConfigServiceImpl();
 
+    public static UserCharacterService userCharacterService = new UserCharacterServiceImpl();
+
     public static Mapper mapper = new Mapper(UserDataServiceImpl.class, Core.configer.read("mysql.path"));
 }

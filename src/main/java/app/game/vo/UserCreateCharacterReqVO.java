@@ -1,16 +1,14 @@
-package app.game.dto;
+package app.game.vo;
 
 import app.game.domain.CharacterData;
 import app.net.annotation.NotNull;
 import lombok.Data;
 
 @Data
-public class UserCharaterDTO {
+public class UserCreateCharacterReqVO {
 
-    @NotNull
     private String userId;
 
-    @NotNull
     private String characterId;
 
     private String createTime;
@@ -19,7 +17,8 @@ public class UserCharaterDTO {
 
     private String deleteFlag;
 
-    @NotNull
-    private CharacterData characterData;
+
+    private String characterData;
+
 
 }

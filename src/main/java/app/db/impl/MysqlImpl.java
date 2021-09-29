@@ -209,6 +209,7 @@ public class MysqlImpl<T> implements DataBase<T> {
     }
 
     @Override
+    @SneakyThrows
     public void insert(String command) {
         try {
             synchronized (this){
@@ -218,6 +219,7 @@ public class MysqlImpl<T> implements DataBase<T> {
         } catch (SQLException throwables) {
             log.error(this.getClass().getName(),"error:{}---sql:{}",throwables.getMessage(),throwables.getSQLState());
             throwables.printStackTrace();
+            throw throwables;
         }
         close();
     }

@@ -72,6 +72,7 @@ public class WorkTrigger implements Runnable{
 
     private void invoke(Message message){
         try {
+            log.info("进入invoke方法");
             long start = System.currentTimeMillis();
             HttpRequestEntity httpRequestEntity = parseData(message.getData());
             ReflectIndicator reflectIndicator = indicators.get(httpRequestEntity.getArgs());
@@ -84,15 +85,17 @@ public class WorkTrigger implements Runnable{
                 returnResult(checkRspVO,message.getChannel());
                 return;
             }
+
             Object oc = clazz.newInstance();
             try {
+                log.info("正在进入{}方法",clazz.getName());
                 Object res = method.invoke(oc,obj);
                 returnResult(res,message.getChannel());
             }catch (Exception e){
                 BaseExceptionRspVO baseExceptionRspVO = new BaseExceptionRspVO();
                 String msg = e.getCause().getMessage();
-                baseExceptionRspVO.setCode(msg.split(" ")[0]);
-                baseExceptionRspVO.setMsg(msg.split(" ")[1]);
+                baseExceptionRspVO.setCode("999999");
+                baseExceptionRspVO.setMsg(msg);
                 returnResult(baseExceptionRspVO,message.getChannel());
             }
             log.info("环节结束，用时:{}ms",System.currentTimeMillis()-start);

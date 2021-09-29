@@ -1,13 +1,11 @@
 package app.game.web.frontend;
 
 
-import app.game.UserDataService;
 import app.game.cons.ServiceCenter;
 import app.game.domain.UserLogData;
-import app.game.service.UserDataServiceImpl;
+import app.game.dto.UserCharaterDTO;
 import app.game.vo.*;
 import app.log.Log;
-import app.net.annotation.Valid;
 import app.reflect.annotation.Path;
 import app.system.Core;
 
@@ -53,6 +51,14 @@ public class UserDataController {
     public List<UserLogData> queryHistory(BaseUserLogDataQueryReqVO baseUserLogDataQueryReqVO){
         List<UserLogData> res = ServiceCenter.baseUserLogDataService.getUserLogDataByUserId(baseUserLogDataQueryReqVO.getUserId());
         return res;
+    }
+
+    @Path("/createCharacter")
+    public UserCharaterDTO createCharacter(UserCharaterDTO userCharaterDTO){
+        log.info("进入[创建角色]接口,入参:{}",userCharaterDTO);
+        ServiceCenter.userCharacterService.createCharacter(userCharaterDTO);
+        log.info("[创建角色]执行完毕");
+        return userCharaterDTO;
     }
 
 
