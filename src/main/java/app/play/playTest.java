@@ -4,6 +4,7 @@ import app.config.annotation.ConfigPath;
 import app.config.impl.ConfigInitializer;
 import app.config.impl.NormalConfig;
 import app.game.ProgressBar;
+import app.game.service.BaseCharacterConfigServiceImpl;
 import app.log.LogFactory;
 import app.net.NioServerSelector;
 import app.net.WorkTrigger;
@@ -177,6 +178,12 @@ public class playTest {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Test
+    public void test11(){
+        Class clazz = BaseCharacterConfigServiceImpl.class;
+        System.out.println(clazz.getSimpleName());
     }
 
     private String getStackTrace(Exception e) {

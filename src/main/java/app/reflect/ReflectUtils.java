@@ -2,14 +2,19 @@ package app.reflect;
 
 
 import app.reflect.annotation.Authority;
+import app.reflect.annotation.Fill;
 import app.reflect.annotation.Path;
+import app.reflect.annotation.Service;
 import app.reflect.container.Indicators;
+import app.reflect.container.ServiceFiller;
 import app.reflect.domain.ReflectIndicator;
+import app.reflect.domain.ServiceInfo;
 import app.reflect.enums.AuthorityEnum;
 import app.utils.SimpleUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -115,6 +120,54 @@ public class ReflectUtils {
                         indicator.add(temp);
                     }
                 }
+            }
+        }
+    }
+
+    public static void constructServiceFiller(String packageName, ServiceFiller serviceFiller){
+        ServiceInfo temp = null;
+        String[] classes = ReflectUtils.scanPackage(packageName);
+        Class clazz = null;
+        for (String className : classes){
+            try {
+                clazz = Class.forName(className);
+            } catch (Exception e) {
+
+            }
+            try {
+                if (clazz != null && clazz.isAnnotationPresent(Service.class)) {
+                    temp = new ServiceInfo();
+                    temp.setClassName(clazz.getSimpleName());
+                    temp.setClassPath(className);
+                    temp.setObj(clazz.newInstance());
+                    serviceFiller.add(temp);
+                }
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void FillServices(String packageName, ServiceFiller serviceFiller){
+        ServiceInfo temp = null;
+        String[] classes = ReflectUtils.scanPackage(packageName);
+        Class clazz = null;
+        for (String className : classes){
+            try {
+                clazz = Class.forName(className);
+                Field[] fields = clazz.getDeclaredFields();
+                for (Field field:fields){
+                    boolean access = field.isAccessible();
+                    field.setAccessible(true);
+                    if(field.isAnnotationPresent(Fill.class)){
+                        //TODO
+                    }
+                }
+
+            } catch (Exception e) {
+
             }
         }
     }
