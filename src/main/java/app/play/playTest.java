@@ -4,15 +4,19 @@ import app.config.annotation.ConfigPath;
 import app.config.impl.ConfigInitializer;
 import app.config.impl.NormalConfig;
 import app.game.ProgressBar;
+import app.game.domain.UserLogData;
 import app.game.service.BaseCharacterConfigServiceImpl;
 import app.log.LogFactory;
 import app.net.NioServerSelector;
 import app.net.WorkTrigger;
+import app.parser.JSONTool;
 import app.reflect.ReflectUtils;
 import app.reflect.annotation.Path;
 import app.reflect.container.Indicators;
 import app.utils.MathUtils;
 import app.utils.ThreadUitls;
+import jdk.internal.dynalink.linker.LinkerServices;
+import lombok.Data;
 import org.junit.Test;
 
 import java.io.File;
@@ -23,6 +27,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -182,8 +187,25 @@ public class playTest {
 
     @Test
     public void test11(){
-        Class clazz = BaseCharacterConfigServiceImpl.class;
-        System.out.println(clazz.getSimpleName());
+        String json = "{\n" +
+                "    \"userId\":\"6847889141309378560\",\n" +
+                "    \"data\":[\n" +
+                "    {\n" +
+                "        \"lastTime\": \"185206\",\n" +
+                "        \"logInTime\": \"2021-09-27 00:08:10\",\n" +
+                "        \"logOffTime\": \"2021-09-27 00:11:15\",\n" +
+                "        \"userId\": \"6847889141309378560\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "        \"lastTime\": \"135774\",\n" +
+                "        \"logInTime\": \"2021-09-27 08:14:26\",\n" +
+                "        \"logOffTime\": \"2021-09-27 08:16:42\",\n" +
+                "        \"userId\": \"6847889141309378560\"\n" +
+                "    }\n" +
+                "]\n" +
+                "}";
+        TestPojo testPojo = (TestPojo) JSONTool.getObject(json.getBytes(StandardCharsets.UTF_8), TestPojo.class);
+        System.out.println(testPojo.getData().get(0).getUserId());
     }
 
     private String getStackTrace(Exception e) {
