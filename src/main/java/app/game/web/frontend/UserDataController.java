@@ -27,7 +27,7 @@ public class UserDataController {
      * @version V1.0
      */
     @Path("/register")
-    public UserRegisterRspVO register(@Valid UserRegisterReqVO userRegisterReqVO){
+    public UserRegisterRspVO register(UserRegisterReqVO userRegisterReqVO){
         log.info("进入[注册]接口--入参:{}",userRegisterReqVO);
         UserRegisterRspVO userRegisterRspVO = ServiceCenter.userDataService.register(userRegisterReqVO);
         log.info("[入参]接口执行完毕，出参:{}",userRegisterRspVO);

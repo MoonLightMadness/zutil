@@ -9,6 +9,7 @@ public class UserRegisterReqVO {
     @NotNull
     private String userName;
 
+    @NotNull
     private String userPassword;
 
 

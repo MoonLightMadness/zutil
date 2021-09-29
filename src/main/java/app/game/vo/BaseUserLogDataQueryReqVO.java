@@ -1,5 +1,6 @@
 package app.game.vo;
 
+import app.net.annotation.NotNull;
 import lombok.Data;
 
 /**
@@ -10,6 +11,8 @@ import lombok.Data;
  */
 @Data
 public class BaseUserLogDataQueryReqVO {
+
+    @NotNull
     private String userId;
 
     private String logInTime;
