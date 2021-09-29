@@ -41,7 +41,7 @@ public class NioMessageQueue {
         synchronized (NioMessageQueue.class){
             Message message = queue.poll();
             if(message != null){
-                log.info("消息队列消息-1,目前队列中有{}条消息",queue.size()-1);
+                log.info("消息队列消息-1,目前队列中有{}条消息",queue.size());
                 return message;
             }
             return null;
