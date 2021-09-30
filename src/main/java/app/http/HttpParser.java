@@ -16,7 +16,11 @@ public class HttpParser {
     public static HttpRequestEntity parseRequestEntiy(byte[] data){
         String sdata = new String(data);
         HttpRequestEntity httpRequestEntity = new HttpRequestEntity();
-        httpRequestEntity.setMethod(sdata.substring(0,sdata.indexOf(" ")));
+        String method = sdata.substring(0,sdata.indexOf(" "));
+        if(!"POST".equals(method)){
+            return null;
+        }
+        httpRequestEntity.setMethod(method);
         httpRequestEntity.setArgs(sdata.substring(sdata.indexOf(" ")+1,sdata.indexOf(" ",httpRequestEntity.getMethod().length()+1)));
         //存在无数据的情况
         try {

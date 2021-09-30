@@ -77,6 +77,10 @@ public class WorkTrigger implements Runnable{
             log.info("进入invoke方法");
             long start = System.currentTimeMillis();
             HttpRequestEntity httpRequestEntity = parseData(message.getData());
+            if(httpRequestEntity == null){
+                log.info("该消息为Respond,不予处理");
+                return;
+            }
             ReflectIndicator reflectIndicator = indicators.get(httpRequestEntity.getArgs());
             Class clazz = Class.forName(reflectIndicator.getClassPath());
             Method method = getMetod(clazz,reflectIndicator.getMethodName());
