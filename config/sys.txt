@@ -5,7 +5,7 @@ system.name = zutil
 
 system.normal.log.loglevel = 3
 
-system.normal.log.last = 2021-10-02
+system.normal.log.last = 2021-10-03
 
 system.log.path = C:\Users\Administrator\Desktop\temp\log
 
@@ -27,7 +27,7 @@ mysql.user = root
 
 mysql.password = root
 
-logServer.enabled = true
+logServer.enabled = false
 
 LogServer.ip = 127.0.0.1
 
@@ -38,3 +38,5 @@ zutil.log.ip = 127.0.0.1
 zutil.log.port = 10012
 
 package.find = .
+
+bean.scan = app

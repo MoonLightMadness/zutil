@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * @date 2021-09-18 10:01
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ElementType.TYPE,ElementType.FIELD,ElementType.PARAMETER})
 public @interface ConfigValue {
     String value();
 }

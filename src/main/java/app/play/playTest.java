@@ -1,8 +1,10 @@
 package app.play;
 
 import app.config.annotation.ConfigPath;
+import app.config.annotation.ConfigValue;
 import app.config.impl.ConfigInitializer;
 import app.config.impl.NormalConfig;
+import app.config.utils.ConfigUtils;
 import app.game.ProgressBar;
 import app.game.domain.UserLogData;
 import app.game.service.BaseCharacterConfigServiceImpl;
@@ -10,7 +12,9 @@ import app.log.LogFactory;
 import app.net.NioServerSelector;
 import app.net.WorkTrigger;
 import app.parser.JSONTool;
+import app.reflect.BeanCenter;
 import app.reflect.ReflectUtils;
+import app.reflect.annotation.Fill;
 import app.reflect.annotation.Path;
 import app.reflect.container.Indicators;
 import app.utils.MathUtils;
@@ -34,6 +38,7 @@ import java.util.List;
 import java.util.UUID;
 
 
+@Fill
 @ConfigPath(value = {"${sys.path}"})
 @Path("/playTest")
 public class playTest {
@@ -228,6 +233,28 @@ public class playTest {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @ConfigValue("${test.property}")
+    public String testStr;
+    @Test
+    public void test13(){
+        try {
+            ConfigInitializer configInitializer = new ConfigInitializer();
+            configInitializer.loadConfigPath(new String[]{"."});
+            ConfigUtils.getValue(this,this.getClass().getField("testStr"));
+            System.out.println(this.testStr);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void test14(){
+        BeanCenter beanCenter = new BeanCenter();
+        beanCenter.load();
+        playTest playTest = (app.play.playTest) beanCenter.get("playTest");
+        System.out.println(playTest.testStr);
     }
 
     private String getStackTrace(Exception e) {

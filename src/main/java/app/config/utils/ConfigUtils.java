@@ -2,8 +2,12 @@ package app.config.utils;
 
 import app.config.Config;
 import app.config.annotation.ConfigPath;
+import app.config.annotation.ConfigValue;
 import app.config.impl.ConfigInitializer;
 import app.config.impl.NormalConfig;
+import app.play.playTest;
+
+import java.lang.reflect.Field;
 
 /**
  * @ClassName : app.config.utils.ConfigUtils
@@ -30,6 +34,17 @@ public class ConfigUtils {
             config.setMeta(configPath.value());
         }
         return config;
+    }
+
+    public static void getValue(Object obj,Field field){
+        try {
+            ConfigValue configValue = obj.getClass().getDeclaredField(field.getName()).getAnnotation(ConfigValue.class);
+            Class clazz = obj.getClass();
+            String value = configValue.value();
+            field.set(obj,value);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -4,6 +4,7 @@ import app.bind.Bind;
 import app.bind.impl.ZBind;
 import app.config.IConfigInitializer;
 import app.config.annotation.ConfigPath;
+import app.config.annotation.ConfigValue;
 import app.config.utils.ConfigUtils;
 import app.reflect.ReflectUtils;
 import app.system.Core;
@@ -47,6 +48,10 @@ public class ConfigInitializer implements IConfigInitializer {
                         if (configPath != null) {
                             changeVariable(configPath);
                         }
+                        Field[] fields = clazz.getDeclaredFields();
+                        for(Field field : fields){
+                            changeFieldValue(field);
+                        }
                     }
                 }
             }
@@ -76,6 +81,29 @@ public class ConfigInitializer implements IConfigInitializer {
         Map memberValues = (Map) hField.get(h);
         // 修改 value 属性值
         memberValues.put("value", mapStrs);
+    }
+
+    private void  changeFieldValue(Field field) throws IllegalAccessException, NoSuchFieldException {
+        boolean canAccess = field.isAccessible();
+        field.setAccessible(true);
+        if(field.isAnnotationPresent(ConfigValue.class)){
+            ConfigValue configValue = field.getAnnotation(ConfigValue.class);
+            String value = configValue.value();
+            if(value.startsWith("${") && value.endsWith("}")){
+                String newStr = systemConfig.read(value.substring(2,value.length()-1));
+                //获取这个代理实例所持有的 InvocationHandler
+                InvocationHandler h = Proxy.getInvocationHandler(configValue);
+                // 获取 AnnotationInvocationHandler 的 memberValues 字段
+                Field hField = h.getClass().getDeclaredField("memberValues");
+                // 因为这个字段事 private final 修饰，所以要打开权限
+                hField.setAccessible(true);
+                // 获取 memberValues
+                Map memberValues = (Map) hField.get(h);
+                // 修改 value 属性值
+                memberValues.put("value", newStr);
+            }
+        }
+        field.setAccessible(canAccess);
     }
 
     /**
