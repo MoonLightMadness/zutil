@@ -5,6 +5,7 @@ import app.config.impl.NormalConfig;
 import app.db.DataBase;
 import app.log.Log;
 import app.log.impl.NormalLog;
+import app.system.Core;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
@@ -29,7 +30,7 @@ public class MysqlImpl<T> implements DataBase<T> {
 
     @Override
     public void initialize(){
-        log= new NormalLog();
+        log= Core.log;
         configer = new NormalConfig();
         //log.info(this.getClass().getName(),"初始化数据库连接");
         if(dbName == null){

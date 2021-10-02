@@ -35,5 +35,13 @@ public class HttpParser {
         return httpRespondEntity;
     }
 
+    public static String constructRequest(HttpRequestEntity httpRequestEntity){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(httpRequestEntity.getMethod());
+        stringBuilder.append(" HTTP/1.1\n");
+        stringBuilder.append("Content-Type: application/json\n\n");
+        stringBuilder.append(httpRequestEntity.getBody());
+        return stringBuilder.toString();
+    }
 
 }

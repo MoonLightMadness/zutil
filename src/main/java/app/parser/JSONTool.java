@@ -2,6 +2,7 @@ package app.parser;
 
 import app.log.Log;
 import app.log.impl.NormalLog;
+import app.system.Core;
 import app.utils.SimpleUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -19,7 +20,7 @@ import java.util.List;
  */
 public class JSONTool {
 
-    private static Log log = new NormalLog();
+    private static Log log = Core.log;
 
     public static byte[] toJson(Object obj){
         String res = JSONObject.toJSONString(obj,false);

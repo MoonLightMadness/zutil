@@ -9,6 +9,7 @@ import app.parser.exception.ServiceException;
 import app.parser.exception.UniversalErrorCodeEnum;
 import app.parser.impl.JSONParserImpl;
 
+import app.system.Core;
 import app.utils.ds.XByteBuffer;
 import lombok.SneakyThrows;
 
@@ -41,7 +42,7 @@ import java.util.regex.Pattern;
  */
 public class SimpleUtils {
 
-    private static Log log = new NormalLog();
+    private static Log log = Core.log;
 
 
     /**

@@ -3,6 +3,7 @@ package app.utils;
 
 import app.log.Log;
 import app.log.impl.NormalLog;
+import app.system.Core;
 
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -19,7 +20,7 @@ public class ThreadUitls {
 
     private static ExecutorService singleThreadPool;
 
-    private static Log log = new NormalLog();
+    private static Log log = Core.log;
 
     static {
         //设置命名规则

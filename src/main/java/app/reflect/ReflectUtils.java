@@ -42,21 +42,21 @@ public class ReflectUtils {
      * @version V1.0
      */
     public static String[] scanPackage(String packageName) {
-        String workingPath = getJarSelfPath();
+        String workingPath = packageName;
         String[] paths;
         //判断程序是否是以jar包形式启动的
         if (workingPath.endsWith(".jar")) {
             paths = scanJarFile(workingPath, packageName).split("\n");
         } else {
-            workingPath += packageName.replace(".", "\\")+"/";
-            paths = scanDirectory(workingPath.substring(1)).split("\n");
+            workingPath = packageName.replace(".", "\\")+"/";
+            paths = scanDirectory(workingPath).split("\n");
         }
         return paths;
     }
 
 
     private static String scanDirectory(String directory) {
-        File file = new File(directory);
+        File file = new File("./target/classes/"+directory);
         StringBuilder sb = new StringBuilder();
         if (!file.exists()) {
             return sb.toString();
@@ -118,6 +118,7 @@ public class ReflectUtils {
                             temp.setAuthority(AuthorityEnum.NORMAL.msg());
                         }
                         indicator.add(temp);
+                        System.out.println(temp);
                     }
                 }
             }

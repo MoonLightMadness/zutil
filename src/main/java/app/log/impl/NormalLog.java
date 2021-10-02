@@ -3,11 +3,23 @@ package app.log.impl;
 import app.config.Config;
 import app.config.impl.NormalConfig;
 import app.config.impl.SystemConfig;
+import app.http.HttpParser;
+import app.http.entity.HttpRequestEntity;
+import app.http.entity.HttpRespondEntity;
 import app.log.Log;
+import app.log.vo.ReceiveLogReqVO;
+import app.net.NioSender;
+import app.parser.JSONTool;
 import lombok.SneakyThrows;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -21,6 +33,38 @@ public class NormalLog implements Log {
 
     private String preSave;
 
+    private SocketChannel socketChannel;
+
+    private boolean remote = false;
+
+    public NormalLog() {
+        try {
+            remote = Boolean.parseBoolean(config.read("logServer.enabled"));
+            if(remote){
+                socketChannel = SocketChannel.open();
+                socketChannel.bind(new InetSocketAddress(config.read("zutil.log.ip"),
+                        Integer.parseInt(config.read("zutil.log.port"))));
+                socketChannel.connect(new InetSocketAddress(config.read("LogServer.ip"),
+                        Integer.parseInt(config.read("LogServer.port"))));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //connect();
+    }
+
+    private void connect() {
+        try {
+            if (socketChannel != null && socketChannel.isConnected()) {
+                socketChannel.finishConnect();
+                socketChannel.close();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * getStackTrace的level取值，具有默认值
      */
@@ -28,9 +72,18 @@ public class NormalLog implements Log {
 
     @Override
     public void info(String msg, Object... args) {
-        synchronized (NormalLog.class){
+        synchronized (NormalLog.class) {
             messageHandler(msg, args);
             logMsgConstructor("info");
+            save();
+        }
+    }
+
+    @Override
+    public void remote(String msg, Object... args) {
+        synchronized (NormalLog.class) {
+            messageHandler(msg, args);
+            logMsgConstructor("remote");
             save();
         }
     }
@@ -47,7 +100,32 @@ public class NormalLog implements Log {
         checkLogFileExist();
         checkLogDate();
         saveToLog(preSave);
-        logBuilder.delete(0,logBuilder.length());
+        if(remote){
+            sendToRemoteServer();
+        }
+        logBuilder.delete(0, logBuilder.length());
+    }
+
+    private void sendToRemoteServer(){
+        ReceiveLogReqVO receiveLogReqVO = new ReceiveLogReqVO();
+        receiveLogReqVO.setLogData(preSave);
+        receiveLogReqVO.setRemoteIp(socketChannel.socket().getLocalAddress().toString());
+        HttpRequestEntity httpRequestEntity = new HttpRequestEntity();
+        httpRequestEntity.setMethod("POST /log/receive");
+        httpRequestEntity.setBody(new String(JSONTool.toJson(receiveLogReqVO)));
+        String text = HttpParser.constructRequest(httpRequestEntity);
+        System.out.println(text);
+        byte[] respond = text.getBytes(StandardCharsets.UTF_8);
+        ByteBuffer buffer = ByteBuffer.allocate(respond.length);
+        buffer.put(respond);
+        buffer.flip();
+        try {
+            //connect();
+            socketChannel.write(buffer);
+            //socketChannel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void logMsgConstructor(String type) {

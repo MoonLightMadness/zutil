@@ -1,5 +1,6 @@
 package app.net;
 
+import app.config.Config;
 import app.log.Log;
 import app.net.exception.MessageQueueMonitor;
 import app.reflect.ReflectUtils;
@@ -35,6 +36,8 @@ public class NioServerSelector {
     private Indicators indicators;
 
     private Log log = Core.log;
+
+    private Config config = Core.configer;
 
     public NioServerSelector() {
         init("127.0.0.1", "10010");
@@ -97,6 +100,8 @@ public class NioServerSelector {
     private void initIndicators(){
         indicators = new Indicators();
         indicators.initialize();
-        ReflectUtils.constructReflectIndicator(".", indicators);
+        System.out.println("反射初始化");
+        ReflectUtils.constructReflectIndicator(config.read("package.find"), indicators);
+        System.out.println("反射初始化完成");
     }
 }

@@ -25,6 +25,16 @@ public interface Log {
      */
     void error(String msg,Object... args);
 
+    /**
+     * 记录远程日志信息
+     * @param msg
+     * @param args
+     * @return
+     * @author zhl
+     * @date 2021-10-02 12:57
+     * @version V1.0
+     */
+    void remote(String msg,Object... args);
 
     /**
      * 持久化保存日志
