@@ -10,6 +10,7 @@ import app.net.annotation.Valid;
 import app.net.entity.CheckRspVO;
 import app.net.entity.Message;
 import app.parser.JSONTool;
+import app.reflect.BeanManager;
 import app.reflect.container.Indicators;
 import app.reflect.domain.ReflectIndicator;
 import app.system.Core;
@@ -91,8 +92,7 @@ public class WorkTrigger implements Runnable{
                 returnResult(checkRspVO,message.getChannel());
                 return;
             }
-
-            Object oc = clazz.newInstance();
+            Object oc = BeanManager.get(clazz.getSimpleName());
             try {
                 log.info("正在进入{}方法",clazz.getName());
                 Object res = method.invoke(oc,obj);
@@ -107,9 +107,6 @@ public class WorkTrigger implements Runnable{
             log.info("环节结束，用时:{}ms",System.currentTimeMillis()-start);
         } catch (ClassNotFoundException e) {
             log.error("未找到该类:{}",e);
-            e.printStackTrace();
-        } catch (IllegalAccessException | InstantiationException e) {
-            log.error("发生错误,原因:{}",e);
             e.printStackTrace();
         }
 

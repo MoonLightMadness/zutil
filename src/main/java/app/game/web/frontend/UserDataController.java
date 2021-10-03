@@ -6,11 +6,13 @@ import app.game.domain.UserLogData;
 import app.game.dto.UserCharaterDTO;
 import app.game.vo.*;
 import app.log.Log;
+import app.reflect.annotation.Fill;
 import app.reflect.annotation.Path;
 import app.system.Core;
 
 import java.util.List;
 
+@Fill
 @Path("/data/user")
 public class UserDataController {
 
