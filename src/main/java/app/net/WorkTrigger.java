@@ -85,8 +85,11 @@ public class WorkTrigger implements Runnable{
             ReflectIndicator reflectIndicator = indicators.get(httpRequestEntity.getArgs());
             Class clazz = Class.forName(reflectIndicator.getClassPath());
             Method method = getMetod(clazz,reflectIndicator.getMethodName());
-            Object obj = JSONTool.getObject(httpRequestEntity.getBody().getBytes(StandardCharsets.UTF_8)
+            log.info("正在解析数据");
+            String body = httpRequestEntity.getBody();
+            Object obj = JSONTool.getObject(body.getBytes(StandardCharsets.UTF_8)
                     ,method.getParameterTypes()[0]);
+            log.info("数据解析完毕");
             CheckRspVO checkRspVO = checkValid(obj);
             if(checkRspVO.getCode().equals("999999")){
                 returnResult(checkRspVO,message.getChannel());

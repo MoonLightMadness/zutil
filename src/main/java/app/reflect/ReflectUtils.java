@@ -10,6 +10,7 @@ import app.reflect.container.ServiceFiller;
 import app.reflect.domain.ReflectIndicator;
 import app.reflect.domain.ServiceInfo;
 import app.reflect.enums.AuthorityEnum;
+import app.system.Core;
 import app.utils.SimpleUtils;
 
 import java.io.File;
@@ -20,6 +21,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -41,8 +43,11 @@ public class ReflectUtils {
      * @date 2021-09-16 09:05
      * @version V1.0
      */
-    public static String[] scanPackage(String packageName) {
+    public static String[] scanPackage(String workingType,String packageName) {
         String workingPath = packageName;
+        if(workingType.toLowerCase(Locale.ROOT).equals("jar")){
+            workingPath = getJarSelfPath();
+        }
         String[] paths;
         //判断程序是否是以jar包形式启动的
         if (workingPath.endsWith(".jar")) {
@@ -89,7 +94,7 @@ public class ReflectUtils {
      */
     public static void constructReflectIndicator(String packageName, Indicators indicator) {
         ReflectIndicator temp = null;
-        String[] classes = ReflectUtils.scanPackage(packageName);
+        String[] classes = ReflectUtils.scanPackage(Core.configer.read("work.type"), packageName);
         Class clazz = null;
         for (String className : classes){
             try {
@@ -125,53 +130,9 @@ public class ReflectUtils {
         }
     }
 
-    public static void constructServiceFiller(String packageName, ServiceFiller serviceFiller){
-        ServiceInfo temp = null;
-        String[] classes = ReflectUtils.scanPackage(packageName);
-        Class clazz = null;
-        for (String className : classes){
-            try {
-                clazz = Class.forName(className);
-            } catch (Exception e) {
 
-            }
-            try {
-                if (clazz != null && clazz.isAnnotationPresent(Service.class)) {
-                    temp = new ServiceInfo();
-                    temp.setClassName(clazz.getSimpleName());
-                    temp.setClassPath(className);
-                    temp.setObj(clazz.newInstance());
-                    serviceFiller.add(temp);
-                }
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
-    public static void FillServices(String packageName, ServiceFiller serviceFiller){
-        ServiceInfo temp = null;
-        String[] classes = ReflectUtils.scanPackage(packageName);
-        Class clazz = null;
-        for (String className : classes){
-            try {
-                clazz = Class.forName(className);
-                Field[] fields = clazz.getDeclaredFields();
-                for (Field field:fields){
-                    boolean access = field.isAccessible();
-                    field.setAccessible(true);
-                    if(field.isAnnotationPresent(Fill.class)){
-                        //TODO
-                    }
-                }
 
-            } catch (Exception e) {
-
-            }
-        }
-    }
 
     private static String[] generateParameters(Method method) {
         String[] paras = new String[method.getParameterCount()];
@@ -192,7 +153,6 @@ public class ReflectUtils {
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
                 if ((entry.getName().replace(SimpleUtils.getFilePathSeparator(), ".").startsWith(packageName))) {
-                    System.out.println(entry.getName());
                     File temp = new File(entry.getName());
                     if (entry.getName().endsWith(".class")) {
                         String p = temp.getPath().replace(SimpleUtils.getFilePathSeparator(), ".").substring(0, temp.getPath().lastIndexOf('.'));

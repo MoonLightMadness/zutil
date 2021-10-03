@@ -40,7 +40,7 @@ public class ConfigInitializer implements IConfigInitializer {
     public void loadConfigPath(String[] packages) {
         try {
             for (String package1:packages){
-                String[] allPaths = ReflectUtils.scanPackage(package1);
+                String[] allPaths = ReflectUtils.scanPackage(systemConfig.read("work.type"), package1);
                 for (String path : allPaths) {
                     if(!SimpleUtils.isEmptyString(path)){
                         Class clazz = Class.forName(path);

@@ -12,13 +12,11 @@ import app.net.NioSender;
 import app.parser.JSONTool;
 import lombok.SneakyThrows;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -108,13 +106,12 @@ public class NormalLog implements Log {
 
     private void sendToRemoteServer(){
         ReceiveLogReqVO receiveLogReqVO = new ReceiveLogReqVO();
-        receiveLogReqVO.setLogData(preSave);
+        receiveLogReqVO.setLogData(new String(preSave.getBytes(StandardCharsets.UTF_8)));
         receiveLogReqVO.setRemoteIp(socketChannel.socket().getLocalAddress().toString());
         HttpRequestEntity httpRequestEntity = new HttpRequestEntity();
         httpRequestEntity.setMethod("POST /log/receive");
         httpRequestEntity.setBody(new String(JSONTool.toJson(receiveLogReqVO)));
         String text = HttpParser.constructRequest(httpRequestEntity);
-        System.out.println(text);
         byte[] respond = text.getBytes(StandardCharsets.UTF_8);
         ByteBuffer buffer = ByteBuffer.allocate(respond.length);
         buffer.put(respond);
@@ -122,8 +119,9 @@ public class NormalLog implements Log {
         try {
             //connect();
             socketChannel.write(buffer);
+            Thread.sleep(10);
             //socketChannel.close();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -172,7 +170,8 @@ public class NormalLog implements Log {
     private void saveToLog(String log) {
         synchronized (NormalLog.class) {
             String logName = config.read("system.log.path") + "/" + config.read("system.name") + ".log";
-            BufferedWriter writer = new BufferedWriter(new FileWriter(logName, true));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter
+                    (new FileOutputStream(logName,true),StandardCharsets.UTF_8));
             writer.write(log);
             writer.flush();
             writer.close();

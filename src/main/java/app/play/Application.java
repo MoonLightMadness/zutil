@@ -2,6 +2,7 @@ package app.play;
 
 import app.config.annotation.ConfigPath;
 import app.config.impl.ConfigInitializer;
+import app.net.NioServerSelector;
 
 import java.util.Arrays;
 
@@ -13,9 +14,15 @@ import java.util.Arrays;
  */
 public class Application {
     public static void main(String[] args) {
-        ConfigInitializer configInitializer = new ConfigInitializer();
-        configInitializer.loadConfigPath(new String[]{".","app"});
-        ConfigPath configPath = playTest.class.getAnnotation(ConfigPath.class);
-        System.out.println(Arrays.toString(configPath.value()));
+        NioServerSelector selector = new NioServerSelector();
+        //selector.accept();
+        selector.read();
+        while (true){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

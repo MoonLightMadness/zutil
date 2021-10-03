@@ -25,7 +25,7 @@ public class BeanCenter {
     public void load(){
         ConfigInitializer configInitializer = new ConfigInitializer();
         configInitializer.loadConfigPath(new String[]{config.read("bean.scan")});
-        String[] paths = ReflectUtils.scanPackage(config.read("bean.scan"));
+        String[] paths = ReflectUtils.scanPackage(config.read("work.type"), config.read("bean.scan"));
         try {
             for (String path:paths){
                 Class clazz = Class.forName(path);

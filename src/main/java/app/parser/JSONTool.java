@@ -4,6 +4,7 @@ import app.log.Log;
 import app.log.impl.NormalLog;
 import app.system.Core;
 import app.utils.SimpleUtils;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -29,7 +30,7 @@ public class JSONTool {
 
     public static Object getObject(byte[] data,Class c){
         try {
-            JSONObject obj = (JSONObject) JSONObject.parse(new String(data));
+            JSONObject obj = (JSONObject) JSON.parse(new String(data));
             Field[] fs = c.getDeclaredFields();
             Object entity = c.newInstance();
             for(Field f : fs){

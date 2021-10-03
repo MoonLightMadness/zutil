@@ -249,11 +249,17 @@ public class playTest {
         }
     }
 
+    public void testSub1(){
+        int num = Integer.parseInt(testStr);
+        System.out.println(num*num);
+    }
+
     @Test
     public void test14(){
         BeanCenter beanCenter = new BeanCenter();
         beanCenter.load();
         playTest playTest = (app.play.playTest) beanCenter.get("playTest");
+        playTest.testSub1();
         System.out.println(playTest.testStr);
     }
 
