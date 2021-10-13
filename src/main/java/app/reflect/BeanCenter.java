@@ -3,7 +3,9 @@ package app.reflect;
 import app.config.Config;
 import app.config.annotation.ConfigValue;
 import app.config.impl.ConfigInitializer;
+import app.reflect.annotation.AutoFill;
 import app.reflect.annotation.Fill;
+import app.reflect.annotation.Service;
 import app.system.Core;
 
 import java.lang.reflect.Field;
@@ -14,25 +16,37 @@ import java.util.Map;
 
 public class BeanCenter {
 
-    private Map<String,Object> center;
+    private Map<String, Object> center;
 
     private Config config = Core.configer;
 
-    public BeanCenter(){
+    public BeanCenter() {
         center = new HashMap<>();
     }
 
-    public void load(){
-        ConfigInitializer configInitializer = new ConfigInitializer();
-        configInitializer.loadConfigPath(new String[]{config.read("bean.scan")});
+    public void load() {
+//        ConfigInitializer configInitializer = new ConfigInitializer();
+//        configInitializer.loadConfigPath(new String[]{config.read("bean.scan")});
         String[] paths = ReflectUtils.scanPackage(config.read("work.type"), config.read("bean.scan"));
         try {
-            for (String path:paths){
+            for (String path : paths) {
                 Class clazz = Class.forName(path);
-                if(clazz.isAnnotationPresent(Fill.class)){
+                if (clazz.isAnnotationPresent(Service.class)) {
                     Object instance = clazz.newInstance();
+                    center.put(instance.getClass().getInterfaces()[0].getSimpleName(), instance);
+                }
+            }
+            for (String path : paths) {
+                Class clazz = Class.forName(path);
+                if (clazz.isAnnotationPresent(Fill.class)) {
+                    Object instance = null;
+                    if (center.get(clazz.getSimpleName()) != null) {
+                        instance = center.get(clazz.getSimpleName());
+                    } else {
+                        instance = clazz.newInstance();
+                    }
                     loadFields(instance);
-                    center.put(clazz.getSimpleName(),instance);
+                    center.put(clazz.getSimpleName(), instance);
                 }
             }
         } catch (ClassNotFoundException e) {
@@ -44,21 +58,21 @@ public class BeanCenter {
         }
     }
 
-    public Object get(String name){
+    public Object get(String name) {
         return center.get(name);
     }
 
-    private void loadFields(Object obj){
+    private void loadFields(Object obj) {
         try {
-            Field[] fields = obj.getClass().getFields();
-            for (Field field : fields){
+            Field[] fields = obj.getClass().getDeclaredFields();
+            for (Field field : fields) {
                 boolean canAccess = field.isAccessible();
                 field.setAccessible(true);
-                if(field.isAnnotationPresent(ConfigValue.class)){
+                if (field.isAnnotationPresent(ConfigValue.class)) {
                     ConfigValue configValue = field.getAnnotation(ConfigValue.class);
                     String value = configValue.value();
-                    if(value.startsWith("${") && value.endsWith("}")){
-                        String newStr = config.read(value.substring(2,value.length()-1));
+                    if (value.startsWith("${") && value.endsWith("}")) {
+                        String newStr = config.read(value.substring(2, value.length() - 1));
                         //获取这个代理实例所持有的 InvocationHandler
                         InvocationHandler h = Proxy.getInvocationHandler(configValue);
                         // 获取 AnnotationInvocationHandler 的 memberValues 字段
@@ -69,8 +83,11 @@ public class BeanCenter {
                         Map memberValues = (Map) hField.get(h);
                         // 修改 value 属性值
                         memberValues.put("value", newStr);
-                        field.set(obj,newStr);
+                        field.set(obj, newStr);
                     }
+                }
+                if (field.isAnnotationPresent(AutoFill.class)) {
+                    field.set(obj, center.get(field.getType().getSimpleName()));
                 }
                 field.setAccessible(canAccess);
             }
@@ -80,7 +97,6 @@ public class BeanCenter {
             e.printStackTrace();
         }
     }
-
 
 
 }

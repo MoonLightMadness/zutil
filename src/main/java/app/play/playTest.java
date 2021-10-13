@@ -8,6 +8,8 @@ import app.config.utils.ConfigUtils;
 import app.game.ProgressBar;
 import app.game.domain.UserLogData;
 import app.game.service.BaseCharacterConfigServiceImpl;
+import app.game.service.BaseUserOnlineServiceImpl;
+import app.game.service.UserBagServiceImpl;
 import app.log.LogFactory;
 import app.net.NioServerSelector;
 import app.net.WorkTrigger;
@@ -261,6 +263,14 @@ public class playTest {
         playTest playTest = (app.play.playTest) beanCenter.get("playTest");
         playTest.testSub1();
         System.out.println(playTest.testStr);
+    }
+
+    @Test
+    public void test15(){
+        BeanCenter beanCenter = new BeanCenter();
+        beanCenter.load();
+        UserBagServiceImpl userBagService = (UserBagServiceImpl) beanCenter.get("UserBagServiceImpl");
+        System.out.println(userBagService.baseUserOnlineService.getClass().getSimpleName());
     }
 
     private String getStackTrace(Exception e) {

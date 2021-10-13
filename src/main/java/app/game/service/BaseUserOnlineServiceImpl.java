@@ -5,6 +5,7 @@ import app.game.cons.ServiceCenter;
 import app.game.domain.UserOnline;
 import app.game.vo.BaseUserOnlineQueryReqVO;
 import app.mapper.annotation.TableName;
+import app.reflect.annotation.Service;
 
 /**
  * @ClassName : app.game.service.BaseUserOnlineServiceImpl
@@ -12,6 +13,7 @@ import app.mapper.annotation.TableName;
  * @Date 2021-09-27 08:32:59
  * @Author ZhangHL
  */
+@Service
 @TableName("user_online")
 public class BaseUserOnlineServiceImpl implements BaseUserOnlineService {
     @Override

@@ -1,5 +1,6 @@
 package app.game.service;
 
+import app.game.BaseUserOnlineService;
 import app.game.UserBagService;
 import app.game.cons.ServiceCenter;
 import app.game.domain.*;
@@ -9,6 +10,8 @@ import app.game.vo.BaseRspVO;
 import app.game.vo.GetItemReqVO;
 import app.mapper.annotation.TableName;
 import app.parser.JSONTool;
+import app.reflect.annotation.AutoFill;
+import app.reflect.annotation.Fill;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.SneakyThrows;
@@ -22,8 +25,14 @@ import java.util.List;
  * @Date 2021-09-29 15:18:54
  * @Author ZhangHL
  */
+@Fill
 @TableName("user_bag_data")
 public class UserBagServiceImpl implements UserBagService {
+
+    @AutoFill
+    public BaseUserOnlineService baseUserOnlineService;
+
+
     @Override
     public UserBagItemData getUserBagItemDataByUserId(String userId) {
         UserBagMetaData userBagMetaData = new UserBagMetaData();
