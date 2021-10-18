@@ -84,6 +84,7 @@ public class BeanCenter {
                         // 修改 value 属性值
                         memberValues.put("value", newStr);
                         field.set(obj, newStr);
+                        Core.log.info("{}-已加载-->{}",value,newStr);
                     }
                 }
                 if (field.isAnnotationPresent(AutoFill.class)) {
