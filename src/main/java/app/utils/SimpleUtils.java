@@ -1,7 +1,6 @@
 package app.utils;
 
 
-
 import app.log.Log;
 
 import app.log.impl.NormalLog;
@@ -143,7 +142,6 @@ public class SimpleUtils {
     }
 
 
-
     /**
      * 将普通字符串转为Base64字符串
      */
@@ -195,13 +193,14 @@ public class SimpleUtils {
 
     /**
      * 执行Bash文件
+     *
      * @param bashPath bash路径
      * @return @return {@link String }
      * @author zhl
      * @date 2021-09-20 01:00
      * @version V1.0
      */
-    public static String callBash(String bashPath){
+    public static String callBash(String bashPath) {
         try {
             Process p;
             p = Runtime.getRuntime().exec(bashPath);
@@ -394,18 +393,18 @@ public class SimpleUtils {
         return System.getProperty("file.separator");
     }
 
-    public static void copyProperties(Object src,Object tgt){
+    public static void copyProperties(Object src, Object tgt) {
         try {
             Field[] srcFileds = src.getClass().getDeclaredFields();
             Field[] tgtFileds = tgt.getClass().getDeclaredFields();
-            for (Field field : tgtFileds){
+            for (Field field : tgtFileds) {
                 boolean isAccess = field.isAccessible();
                 field.setAccessible(true);
-                for (Field sFiled : srcFileds){
+                for (Field sFiled : srcFileds) {
                     boolean sIsAccess = sFiled.isAccessible();
                     sFiled.setAccessible(true);
-                    if(field.getName().equals(sFiled.getName())){
-                        field.set(tgt,sFiled.get(src));
+                    if (field.getName().equals(sFiled.getName())) {
+                        field.set(tgt, sFiled.get(src));
                     }
                     sFiled.setAccessible(sIsAccess);
                 }
@@ -523,6 +522,7 @@ public class SimpleUtils {
     /**
      * 对对象数值进行排序
      * 排序标志：Field
+     *
      * @param array 数组
      * @param field 排序标志，该字段类型必须为数值类型
      * @param start 开始
@@ -533,17 +533,17 @@ public class SimpleUtils {
      * @version V1.0
      */
     public static Object[] qsortObjects(Object[] array, Field field, int start, int end) {
-        long pivot = parseToLong(array[start],field);
+        long pivot = parseToLong(array[start], field);
         int i = start;
         int j = end;
         while (i < j) {
-            while ((i < j) && (parseToLong(array[j],field) > pivot)) {
+            while ((i < j) && (parseToLong(array[j], field) > pivot)) {
                 j--;
             }
-            while ((i < j) && (parseToLong(array[i],field)  < pivot)) {
+            while ((i < j) && (parseToLong(array[i], field) < pivot)) {
                 i++;
             }
-            if ((parseToLong(array[i],field)  == parseToLong(array[j],field) ) && (i < j)) {
+            if ((parseToLong(array[i], field) == parseToLong(array[j], field)) && (i < j)) {
                 i++;
             } else {
                 Object temp = array[i];
@@ -563,6 +563,7 @@ public class SimpleUtils {
     /**
      * 对对象数值进行排序
      * 排序标志：Field
+     *
      * @param objects 对象
      * @param field   具有基本数值类型的字段
      * @return @return {@link List<Object> }
@@ -570,13 +571,13 @@ public class SimpleUtils {
      * @date 2021-08-23 16:08
      * @version V1.0
      */
-    public static List<Object> qsortObjects(List<Object> objects,Field field){
+    public static List<Object> qsortObjects(List<Object> objects, Field field) {
         Object[] os = objects.toArray();
-        os = qsortObjects(os,field,0,os.length-1);
+        os = qsortObjects(os, field, 0, os.length - 1);
         return Arrays.asList(os);
     }
 
-    private static long parseToLong(Object object,Field field){
+    private static long parseToLong(Object object, Field field) {
         return Long.valueOf(String.valueOf(getObjectFieldValue(object, field)));
     }
 
@@ -591,7 +592,7 @@ public class SimpleUtils {
         return null;
     }
 
-    public static String[] addressCutter(String address){
+    public static String[] addressCutter(String address) {
         // example: /127.0.0.1:10000
         address = address.substring(1);
         String[] result = new String[2];
@@ -600,25 +601,88 @@ public class SimpleUtils {
         return result;
     }
 
-    public static Object parseTo(byte[] json,Class clazz){
-        return new JSONParserImpl().parser(json,clazz);
+    public static Object parseTo(byte[] json, Class clazz) {
+        return new JSONParserImpl().parser(json, clazz);
     }
 
     /**
      * 终结Java服务 <br/>
      * windows系统使用
+     *
      * @param serviceName 服务名称
      * @return @return {@link String }
      * @author zhl
      * @date 2021-09-06 13:46
      * @version V1.0
      */
-    public static String terminateJavaService(String serviceName){
-        String str = "jps | find /I \""+serviceName+"\"";
-        String res = SimpleUtils.callShell(str,"c",true);
+    public static String terminateJavaService(String serviceName) {
+        String str = "jps | find /I \"" + serviceName + "\"";
+        String res = SimpleUtils.callShell(str, "c", true);
         res = res.split(" ")[0].trim();
-        res = SimpleUtils.callShell("taskkill /F /PID "+res,"c",true);
+        res = SimpleUtils.callShell("taskkill /F /PID " + res, "c", true);
         return res;
     }
 
+    /**
+     * 根据给定字符串打印列表对象 <br>
+     *
+     * @param objects 对象
+     * @param method  方法
+     * @return @return {@link String }
+     * @author zhl
+     * @date 2021-10-18 10:36
+     * @version V1.0
+     */
+    public static<T> String printList(List<T> objects, String method) {
+        StringBuilder stringBuilder = new StringBuilder();
+        String[] methods = method.split(",");
+        try {
+            for (Object obj : objects) {
+                for (String m : methods){
+                    Field field = obj.getClass().getDeclaredField(m);
+                    boolean canAccess = field.isAccessible();
+                    field.setAccessible(true);
+                    stringBuilder.append(m).append("=").append(field.get(obj)).append("  ");
+                    field.setAccessible(canAccess);
+                }
+                stringBuilder.append("\n");
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 获取指定数量的空格
+     * @param num
+     * @return @return {@link String }
+     * @author zhl
+     * @date 2021-10-18 10:58
+     * @version V1.0
+     */
+    public static String getSpaces(int num){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < num; i++) {
+            stringBuilder.append(" ");
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 打印列表信息
+     *
+     * @param objects 对象
+     * @return @return {@link String }
+     * @author zhl
+     * @date 2021-10-18 10:37
+     * @version V1.0
+     */
+    public static<T> String printList(List<T> objects) {
+        StringBuilder sb = new StringBuilder();
+        for (Object obj : objects) {
+            sb.append(obj).append("\n");
+        }
+        return sb.toString();
+    }
 }
