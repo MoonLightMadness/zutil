@@ -39,7 +39,7 @@ public class NormalConfig implements Config {
         }
         String value = cache.get(property);
         if (value == null) {
-            throw new ConfigException(ConfigEnum.CE_002.getCode(), ConfigEnum.CE_002.getMsg());
+            throw new ConfigException(ConfigEnum.CE_002.getCode(), ConfigEnum.CE_002.getMsg()+":"+property);
         }
         return value;
     }
