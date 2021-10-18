@@ -1,6 +1,7 @@
 package app.utils;
 
 
+import app.config.annotation.ConfigValue;
 import app.log.Log;
 
 import app.log.impl.NormalLog;
@@ -8,6 +9,7 @@ import app.parser.exception.ServiceException;
 import app.parser.exception.UniversalErrorCodeEnum;
 import app.parser.impl.JSONParserImpl;
 
+import app.reflect.annotation.Fill;
 import app.system.Core;
 import app.utils.ds.XByteBuffer;
 import lombok.SneakyThrows;
@@ -39,6 +41,7 @@ import java.util.regex.Pattern;
  * @Date 2021-03-31 20:11:49
  * @Author ZhangHL
  */
+@Fill
 public class SimpleUtils {
 
     private static Log log = Core.log;
@@ -633,12 +636,12 @@ public class SimpleUtils {
      * @date 2021-10-18 10:36
      * @version V1.0
      */
-    public static<T> String printList(List<T> objects, String method) {
+    public static <T> String printList(List<T> objects, String method) {
         StringBuilder stringBuilder = new StringBuilder();
         String[] methods = method.split(",");
         try {
             for (Object obj : objects) {
-                for (String m : methods){
+                for (String m : methods) {
                     Field field = obj.getClass().getDeclaredField(m);
                     boolean canAccess = field.isAccessible();
                     field.setAccessible(true);
@@ -655,13 +658,14 @@ public class SimpleUtils {
 
     /**
      * 获取指定数量的空格
+     *
      * @param num
      * @return @return {@link String }
      * @author zhl
      * @date 2021-10-18 10:58
      * @version V1.0
      */
-    public static String getSpaces(int num){
+    public static String getSpaces(int num) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < num; i++) {
             stringBuilder.append(" ");
@@ -678,11 +682,29 @@ public class SimpleUtils {
      * @date 2021-10-18 10:37
      * @version V1.0
      */
-    public static<T> String printList(List<T> objects) {
+    public static <T> String printList(List<T> objects) {
         StringBuilder sb = new StringBuilder();
         for (Object obj : objects) {
             sb.append(obj).append("\n");
         }
         return sb.toString();
     }
+
+    @ConfigValue("${utils.savePath}")
+    private static String savePath;
+
+    @SneakyThrows
+    public static String saveFile(String source, String fileName) {
+        File file = new File(savePath + fileName);
+        if (file.exists()) {
+            throw new ServiceException(UniversalErrorCodeEnum.UEC_01004.getCode(), UniversalErrorCodeEnum.UEC_01004.getMsg());
+        }
+        File src = new File(source);
+        if (!src.exists()) {
+            throw new ServiceException(UniversalErrorCodeEnum.UEC_01005.getCode(), UniversalErrorCodeEnum.UEC_01005.getMsg());
+        }
+        src.renameTo(file);
+        return savePath + fileName;
+    }
+
 }
