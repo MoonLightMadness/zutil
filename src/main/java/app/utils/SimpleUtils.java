@@ -693,8 +693,16 @@ public class SimpleUtils {
     @ConfigValue("${utils.savePath}")
     private static String savePath;
 
+    /**
+     * @param source   文件源
+     * @param fileName 保存文件的名称
+     * @return @return {@link String }
+     * @author zhl
+     * @date 2021-10-18 22:45
+     * @version V1.0
+     */
     @SneakyThrows
-    public static String saveFile(String source, String fileName) {
+    public static String moveFile(String source, String fileName) {
         File file = new File(savePath + fileName);
         if (file.exists()) {
             throw new ServiceException(UniversalErrorCodeEnum.UEC_01004.getCode(), UniversalErrorCodeEnum.UEC_01004.getMsg());
