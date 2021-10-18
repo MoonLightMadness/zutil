@@ -15,10 +15,9 @@ public class BaseUserCharacterServiceImpl implements BaseUserCharacterService {
     @Override
     public List<UserCharaterDTO> getUserCharacterByUserId(String userId) {
         ServiceCenter.mapper.setTableName(this.getClass());
-        Packer<UserCharaterDTO> packer = new Packer<>();
         UserCharaterDTO userCharaterDTO = new UserCharaterDTO();
         userCharaterDTO.setUserId(userId);
-        List<UserCharaterDTO> list = packer.pack(ServiceCenter.mapper.selectList(new CharacterConfigDTO(),userCharaterDTO));
+        List<UserCharaterDTO> list = Packer.pack(ServiceCenter.mapper.selectList(new CharacterConfigDTO(),userCharaterDTO));
         return list;
     }
 

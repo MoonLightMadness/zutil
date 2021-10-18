@@ -26,7 +26,6 @@ public class BaseUserLogDataServiceImpl implements BaseUserLogDataService {
         baseUserLogDataQueryReqVO.setUserId(userId);
         ServiceCenter.mapper.setTableName(this.getClass());
         Object[] userLogDatas = ServiceCenter.mapper.selectList(new UserLogData(),baseUserLogDataQueryReqVO);
-        Packer<UserLogData> packer = new Packer<>();
-        return packer.pack(userLogDatas);
+        return Packer.pack(userLogDatas);
     }
 }

@@ -26,8 +26,7 @@ public class BaseCharacterConfigServiceImpl implements BaseCharacterConfigServic
     @Override
     public List<CharacterConfigDTO> getAllConfig() {
         ServiceCenter.mapper.setTableName(this.getClass());
-        Packer<CharacterConfigDTO> packer = new Packer<>();
-        List<CharacterConfigDTO> all = packer.pack(ServiceCenter.mapper.selectList(new CharacterConfigDTO(),null));
+        List<CharacterConfigDTO> all = Packer.pack(ServiceCenter.mapper.selectList(new CharacterConfigDTO(),null));
         return all;
     }
 

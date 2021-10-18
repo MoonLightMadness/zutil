@@ -10,6 +10,7 @@ import app.game.domain.UserLogData;
 import app.game.service.BaseCharacterConfigServiceImpl;
 import app.game.service.BaseUserOnlineServiceImpl;
 import app.game.service.UserBagServiceImpl;
+import app.game.vo.GetItemReqVO;
 import app.log.LogFactory;
 import app.net.NioServerSelector;
 import app.net.WorkTrigger;
@@ -20,6 +21,7 @@ import app.reflect.annotation.Fill;
 import app.reflect.annotation.Path;
 import app.reflect.container.Indicators;
 import app.utils.MathUtils;
+import app.utils.Packer;
 import app.utils.ThreadUitls;
 import jdk.internal.dynalink.linker.LinkerServices;
 import lombok.Data;
@@ -35,6 +37,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -270,6 +273,13 @@ public class playTest {
         BeanCenter beanCenter = new BeanCenter();
         beanCenter.load();
         UserBagServiceImpl userBagService = (UserBagServiceImpl) beanCenter.get("UserBagServiceImpl");
+        System.out.println(userBagService.baseUserOnlineService.getClass().getSimpleName());
+    }
+    @Test
+    public void test16(){
+        BeanCenter beanCenter = new BeanCenter();
+        beanCenter.load();
+        UserBagServiceImpl userBagService = Packer.pack(beanCenter.get("UserBagServiceImpl"));
         System.out.println(userBagService.baseUserOnlineService.getClass().getSimpleName());
     }
 

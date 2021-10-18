@@ -11,13 +11,17 @@ import java.util.List;
  */
 public class Packer<T> {
 
-    public List<T> pack(Object[] objects){
+
+    public static<T> List<T> pack(Object[] objects) {
         List<T> res = new ArrayList<>();
-        for (Object obj : objects){
+        for (Object obj : objects) {
             res.add((T) obj);
         }
         return res;
     }
 
+    public static <T> T pack(Object obj) {
+        return (T) obj;
+    }
 
 }
