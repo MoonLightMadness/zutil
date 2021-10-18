@@ -5,6 +5,8 @@ import app.config.annotation.ConfigValue;
 import app.config.impl.ConfigInitializer;
 import app.config.impl.NormalConfig;
 import app.config.utils.ConfigUtils;
+import app.db.SqlBuilder;
+import app.db.impl.SqlBuilderImpl;
 import app.game.ProgressBar;
 import app.game.domain.UserLogData;
 import app.game.service.BaseCharacterConfigServiceImpl;
@@ -281,6 +283,14 @@ public class playTest {
         beanCenter.load();
         UserBagServiceImpl userBagService = Packer.pack(beanCenter.get("UserBagServiceImpl"));
         System.out.println(userBagService.baseUserOnlineService.getClass().getSimpleName());
+    }
+
+    @Test
+    public void test17(){
+        SqlBuilder sqlBuilder = new SqlBuilderImpl();
+        sqlBuilder.setTable("act_sf_param_of").delete("de","ed").where("task_handle_item","123");
+        sqlBuilder.and().where("prrr","a");
+        System.out.println(sqlBuilder.toString());
     }
 
     private String getStackTrace(Exception e) {

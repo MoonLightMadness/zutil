@@ -98,7 +98,7 @@ public class SqlBuilderImpl implements SqlBuilder {
         CharSequence seq = whereBuilder.subSequence(0,whereBuilder.length()-1);
         whereBuilder.delete(0,whereBuilder.length());
         whereBuilder.append(seq);
-        whereBuilder.append("and").append(" ");
+        whereBuilder.append(" and").append(" ");
         return this;
     }
 
