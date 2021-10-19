@@ -703,7 +703,8 @@ public class SimpleUtils {
      */
     @SneakyThrows
     public static String moveFile(String source, String fileName) {
-        File file = new File(savePath + fileName);
+        File directory = new File(savePath);
+        File file = new File(directory.getAbsolutePath() + "/" + fileName);
         if (file.exists()) {
             throw new ServiceException(UniversalErrorCodeEnum.UEC_01004.getCode(), UniversalErrorCodeEnum.UEC_01004.getMsg());
         }
@@ -712,7 +713,7 @@ public class SimpleUtils {
             throw new ServiceException(UniversalErrorCodeEnum.UEC_01005.getCode(), UniversalErrorCodeEnum.UEC_01005.getMsg());
         }
         src.renameTo(file);
-        return savePath + fileName;
+        return directory.getAbsolutePath() + "/" + fileName;
     }
 
 }
