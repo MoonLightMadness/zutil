@@ -753,4 +753,18 @@ public class SimpleUtils {
         return directory.getAbsolutePath() + "/" + fileName;
     }
 
+    public static String StringFormatter(String str,String... args){
+        StringBuilder logBuilder = new StringBuilder();
+        for (int i = 0; i < args.length; i++) {
+            int pointer = str.indexOf('{');
+            if (pointer != -1) {
+                logBuilder.append(str, 0, pointer);
+                logBuilder.append(args[i]);
+                str = str.substring(pointer + 2);
+            }
+        }
+        logBuilder.append(str).append("\n");
+        return logBuilder.toString();
+    }
+
 }
