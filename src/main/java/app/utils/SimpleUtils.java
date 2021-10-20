@@ -355,6 +355,7 @@ public class SimpleUtils {
 
     /**
      * 判断给定数字代表的年份是否是闰年
+     *
      * @param prolepticYear 需要判断的年份
      * @return @return boolean
      * @author zhl
@@ -704,6 +705,7 @@ public class SimpleUtils {
 
     /**
      * 移动文件到指定位置
+     *
      * @param source   文件源
      * @param fileName 保存文件的名称
      * @return @return {@link String }
@@ -728,6 +730,7 @@ public class SimpleUtils {
 
     /**
      * 复制文件到指定位置
+     *
      * @param source   源文件路径
      * @param fileName 复制后的文件名称
      * @return @return {@link String }
@@ -736,7 +739,7 @@ public class SimpleUtils {
      * @version V1.0
      */
     @SneakyThrows
-    public static String copyFile(String source,String fileName){
+    public static String copyFile(String source, String fileName) {
         File directory = new File(savePath);
         File file = new File(directory.getAbsolutePath() + "/" + fileName);
         if (file.exists()) {
@@ -749,11 +752,20 @@ public class SimpleUtils {
 
         Path srcp = Paths.get(source);
         Path dest = Paths.get(directory.getAbsolutePath() + "/" + fileName);
-        Files.copy(srcp,dest, StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(srcp, dest, StandardCopyOption.REPLACE_EXISTING);
         return directory.getAbsolutePath() + "/" + fileName;
     }
 
-    public static String StringFormatter(String str,String... args){
+    /**
+     * 格式化字符串
+     * @param str  str
+     * @param args
+     * @return @return {@link String }
+     * @author zhl
+     * @date 2021-10-20 16:14
+     * @version V1.0
+     */
+    public static String StringFormatter(String str, String... args) {
         StringBuilder logBuilder = new StringBuilder();
         for (int i = 0; i < args.length; i++) {
             int pointer = str.indexOf('{');
