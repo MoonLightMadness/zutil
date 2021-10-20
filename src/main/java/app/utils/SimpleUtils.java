@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -352,7 +353,15 @@ public class SimpleUtils {
         return total;
     }
 
-    private static boolean isLeapYear(long prolepticYear) {
+    /**
+     * 判断给定数字代表的年份是否是闰年
+     * @param prolepticYear 需要判断的年份
+     * @return @return boolean
+     * @author zhl
+     * @date 2021-10-19 09:13
+     * @version V1.0
+     */
+    public static boolean isLeapYear(long prolepticYear) {
         return ((prolepticYear & 3) == 0) && ((prolepticYear % 100) != 0 || (prolepticYear % 400) == 0);
     }
 
@@ -694,6 +703,7 @@ public class SimpleUtils {
     private static String savePath;
 
     /**
+     * 移动文件到指定位置
      * @param source   文件源
      * @param fileName 保存文件的名称
      * @return @return {@link String }
@@ -713,6 +723,33 @@ public class SimpleUtils {
             throw new ServiceException(UniversalErrorCodeEnum.UEC_01005.getCode(), UniversalErrorCodeEnum.UEC_01005.getMsg());
         }
         src.renameTo(file);
+        return directory.getAbsolutePath() + "/" + fileName;
+    }
+
+    /**
+     * 复制文件到指定位置
+     * @param source   源文件路径
+     * @param fileName 复制后的文件名称
+     * @return @return {@link String }
+     * @author zhl
+     * @date 2021-10-19 09:10
+     * @version V1.0
+     */
+    @SneakyThrows
+    public static String copyFile(String source,String fileName){
+        File directory = new File(savePath);
+        File file = new File(directory.getAbsolutePath() + "/" + fileName);
+        if (file.exists()) {
+            throw new ServiceException(UniversalErrorCodeEnum.UEC_01004.getCode(), UniversalErrorCodeEnum.UEC_01004.getMsg());
+        }
+        File src = new File(source);
+        if (!src.exists()) {
+            throw new ServiceException(UniversalErrorCodeEnum.UEC_01005.getCode(), UniversalErrorCodeEnum.UEC_01005.getMsg());
+        }
+
+        Path srcp = Paths.get(source);
+        Path dest = Paths.get(directory.getAbsolutePath() + "/" + fileName);
+        Files.copy(srcp,dest, StandardCopyOption.REPLACE_EXISTING);
         return directory.getAbsolutePath() + "/" + fileName;
     }
 
