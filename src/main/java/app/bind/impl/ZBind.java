@@ -45,7 +45,7 @@ public class ZBind implements Bind {
         checkKeyExist(key);
         List<BindUnit> value = binds.get(key);
         for (BindUnit bu : value) {
-            bu.invoke(obj, args);
+            bu.invokeUnit(obj, args);
         }
         log.info("订阅方法触发完成");
     }

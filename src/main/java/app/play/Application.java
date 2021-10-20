@@ -3,6 +3,7 @@ package app.play;
 import app.config.annotation.ConfigPath;
 import app.config.impl.ConfigInitializer;
 import app.net.NioServerSelector;
+import app.reflect.BeanCenter;
 
 import java.util.Arrays;
 
@@ -14,6 +15,10 @@ import java.util.Arrays;
  */
 public class Application {
     public static void main(String[] args) {
+        //Bean加载
+        BeanCenter beanCenter = new BeanCenter();
+        beanCenter.load();
+        //开启服务
         NioServerSelector selector = new NioServerSelector();
         //selector.accept();
         selector.read();
