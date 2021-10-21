@@ -46,11 +46,9 @@ public interface SqlBuilder {
     /**
      * 删除
      *
-     * @param column 列名
-     * @param value  值
      * @return {@link SqlBuilder}
      */
-    SqlBuilder delete(String column,Object value);
+    SqlBuilder delete();
 
     /**
      *

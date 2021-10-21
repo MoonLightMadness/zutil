@@ -61,14 +61,8 @@ public class SqlBuilderImpl implements SqlBuilder {
     }
 
     @Override
-    public SqlBuilder delete(String column, Object value) {
+    public SqlBuilder delete() {
         operation = "Delete";
-        if (value instanceof Integer) {
-            selectBuilder.append(column).append("=").append(value);
-        } else {
-            selectBuilder.append(column).append("=").append('\'').append(value).append('\'');
-        }
-        selectBuilder.append(',');
         return this;
     }
 
