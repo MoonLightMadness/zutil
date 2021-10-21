@@ -1,4 +1,4 @@
-package app.net.exception;
+package app.net;
 
 import app.net.NioMessageQueue;
 import app.net.entity.Message;
