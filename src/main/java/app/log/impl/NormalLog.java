@@ -132,7 +132,7 @@ public class NormalLog implements Log {
         String methodName = Thread.currentThread().getStackTrace()[level].getMethodName();
         String fileName = Thread.currentThread().getStackTrace()[level].getFileName();
         int line = Thread.currentThread().getStackTrace()[level].getLineNumber();
-        preSave = "[" + type.toUpperCase(Locale.ROOT) + "]"
+        preSave = "[" + type.toUpperCase(Locale.ROOT)+" - "+ Thread.currentThread().getName() + "]"
                 + fileName + "(" + className + "." + methodName + "." + line + ")----" + LocalDateTime.now() + "\n"
                 + logBuilder.toString();
         System.out.println(preSave);
