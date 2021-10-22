@@ -44,6 +44,7 @@ public class MysqlImpl<T> implements DataBase<T> {
             e.printStackTrace();
             log.error(this.getClass().getName(),e.getMessage());
         }
+        firstContact();
     }
 
     /**
@@ -251,5 +252,21 @@ public class MysqlImpl<T> implements DataBase<T> {
             throwables.printStackTrace();
         }
         close();
+    }
+
+    @Override
+    public Object firstContact() {
+        long start = System.currentTimeMillis();
+        open();
+        try {
+            resultSet = statement.executeQuery("SELECT VERSION()");
+            if (resultSet.next()){
+                String version = resultSet.getString(1);
+                log.info("First Contact:~Version:{} Cost:{}ms",version,System.currentTimeMillis() - start);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return true;
     }
 }

@@ -12,6 +12,7 @@ import app.mapper.AbstractMapper;
 import app.mapper.annotation.TableName;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -152,6 +153,12 @@ public class Mapper extends AbstractMapper {
 
     @Override
     public Object selectOne(Object object, Object condition) {
+        StackTraceElement e = Thread.currentThread().getStackTrace()[2];
+        try {
+            this.setTableName(Class.forName(e.getClassName()));
+        } catch (ClassNotFoundException classNotFoundException) {
+            classNotFoundException.printStackTrace();
+        }
         return dataBase.getOneObject("SELECT " + getSelectString(object) + " FROM " + tName + " WHERE " + getWhereString(condition), tName, object.getClass());
     }
 

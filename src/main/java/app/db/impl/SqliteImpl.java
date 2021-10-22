@@ -175,6 +175,11 @@ public class SqliteImpl<T> implements DataBase<T> {
         return null;
     }
 
+    @Override
+    public Object firstContact() {
+        return "1";
+    }
+
     private String[] getColumnNames(String tableName){
         String comm = "pragma table_info(\""+tableName+"\")";
         StringBuilder sb = new StringBuilder();

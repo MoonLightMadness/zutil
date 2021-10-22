@@ -79,5 +79,12 @@ public interface DataBase<T> {
      */
     Object getOneObject(String command,String tableName,Class clazz);
 
-
+    /**
+     * 第一次接触
+     * @return @return {@link Object }
+     * @author zhl
+     * @date 2021-10-22 16:28
+     * @version V1.0
+     */
+    Object firstContact();
 }

@@ -8,12 +8,15 @@ import app.config.utils.ConfigUtils;
 import app.db.SqlBuilder;
 import app.db.impl.SqlBuilderImpl;
 import app.game.ProgressBar;
+import app.game.domain.CharacterConfig;
+import app.game.domain.CharacterData;
 import app.game.domain.UserLogData;
 import app.game.service.BaseCharacterConfigServiceImpl;
 import app.game.service.BaseUserOnlineServiceImpl;
 import app.game.service.UserBagServiceImpl;
 import app.game.vo.GetItemReqVO;
 import app.log.LogFactory;
+import app.mapper.annotation.TableName;
 import app.net.NioServerSelector;
 import app.net.WorkTrigger;
 import app.parser.JSONTool;
@@ -22,8 +25,10 @@ import app.reflect.ReflectUtils;
 import app.reflect.annotation.Fill;
 import app.reflect.annotation.Path;
 import app.reflect.container.Indicators;
+import app.system.ServiceUnit;
 import app.utils.MathUtils;
 import app.utils.Packer;
+import app.utils.SimpleUtils;
 import app.utils.ThreadUitls;
 import jdk.internal.dynalink.linker.LinkerServices;
 import lombok.Data;
@@ -48,7 +53,8 @@ import java.util.UUID;
 @Fill
 @ConfigPath(value = {"${sys.path}"})
 @Path("/playTest")
-public class playTest {
+@TableName("character_config")
+public class playTest extends ServiceUnit {
 
 
     @Test
@@ -187,11 +193,11 @@ public class playTest {
     }
 
     @Test
-    public void test10(){
+    public void test10() {
         NioServerSelector selector = new NioServerSelector();
         //selector.accept();
         selector.read();
-        while (true){
+        while (true) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -201,7 +207,7 @@ public class playTest {
     }
 
     @Test
-    public void test11(){
+    public void test11() {
         String json = "{\n" +
                 "    \"userId\":\"6847889141309378560\",\n" +
                 "    \"data\":[\n" +
@@ -224,45 +230,47 @@ public class playTest {
         System.out.println(new String(JSONTool.toJson(testPojo)));
 
     }
+
     @Test
-    public void test12(){
+    public void test12() {
         TestPojo testPojo = new TestPojo();
         Class clazz = testPojo.getClass();
         try {
             Object obj = clazz.newInstance();
             Field[] fs = clazz.getDeclaredFields();
-            for (Field f : fs){
+            for (Field f : fs) {
                 f.setAccessible(true);
-                System.out.println(f.getType().toString()+" "+f.getName());
+                System.out.println(f.getType().toString() + " " + f.getName());
                 System.out.println(f.getGenericType());
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @ConfigValue("${test.property}")
     public String testStr;
+
     @Test
-    public void test13(){
+    public void test13() {
         try {
             ConfigInitializer configInitializer = new ConfigInitializer();
             configInitializer.loadConfigPath(new String[]{"."});
-            ConfigUtils.getValue(this,this.getClass().getField("testStr"));
+            ConfigUtils.getValue(this, this.getClass().getField("testStr"));
             System.out.println(this.testStr);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
     }
 
-    public void testSub1(){
+    public void testSub1() {
         int num = Integer.parseInt(testStr);
-        System.out.println(num*num);
+        System.out.println(num * num);
     }
 
     @Test
-    public void test14(){
+    public void test14() {
         BeanCenter beanCenter = new BeanCenter();
         beanCenter.load();
         playTest playTest = (app.play.playTest) beanCenter.get("playTest");
@@ -271,14 +279,15 @@ public class playTest {
     }
 
     @Test
-    public void test15(){
+    public void test15() {
         BeanCenter beanCenter = new BeanCenter();
         beanCenter.load();
         UserBagServiceImpl userBagService = (UserBagServiceImpl) beanCenter.get("UserBagServiceImpl");
         System.out.println(userBagService.baseUserOnlineService.getClass().getSimpleName());
     }
+
     @Test
-    public void test16(){
+    public void test16() {
         BeanCenter beanCenter = new BeanCenter();
         beanCenter.load();
         UserBagServiceImpl userBagService = Packer.pack(beanCenter.get("UserBagServiceImpl"));
@@ -286,11 +295,39 @@ public class playTest {
     }
 
     @Test
-    public void test17(){
+    public void test17() {
         SqlBuilder sqlBuilder = new SqlBuilderImpl();
-        sqlBuilder.setTable("act_sf_param_of").delete("de","ed").where("task_handle_item","123");
-        sqlBuilder.and().where("prrr","a");
-        System.out.println(sqlBuilder.toString());
+        sqlBuilder.setTable("act_sf_param_of").delete().where("task_handle_item", "123");
+        sqlBuilder.and().where("prrr", "a");
+        System.out.println(sqlBuilder);
+    }
+
+    @Test
+    public void test18() {
+        BeanCenter beanCenter = new BeanCenter();
+        beanCenter.load();
+        SimpleUtils.moveFile("C:\\Users\\Administrator\\Desktop\\temp\\save\\2.txt", "3.txt");
+    }
+
+    @Test
+    public void test19() {
+        System.out.println(SimpleUtils.StringFormatter("{}{}This{} {} a t{}t{}", "a", "b", "is", "es", "c"));
+    }
+
+    @Test
+    public void test20(){
+        CharacterConfig data = new CharacterConfig();
+        data.setCharacterId("1");
+        long start = System.currentTimeMillis();
+        data = Packer.pack(mapper.selectOne(data,data));
+        System.out.println(System.currentTimeMillis() - start);
+        System.out.println(data);
+        data = new CharacterConfig();
+        data.setCharacterId("2");
+        start = System.currentTimeMillis();
+        data = Packer.pack(mapper.selectOne(data,data));
+        System.out.println(System.currentTimeMillis() - start);
+        System.out.println(data);
     }
 
     private String getStackTrace(Exception e) {
@@ -301,5 +338,6 @@ public class playTest {
         }
         return sb.toString();
     }
+
 
 }

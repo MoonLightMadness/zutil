@@ -2,8 +2,10 @@ package app.play;
 
 import app.config.annotation.ConfigPath;
 import app.config.impl.ConfigInitializer;
+import app.log.Log;
 import app.net.NioServerSelector;
 import app.reflect.BeanCenter;
+import app.system.Core;
 
 import java.util.Arrays;
 
@@ -15,6 +17,9 @@ import java.util.Arrays;
  */
 public class Application {
     public static void main(String[] args) {
+        Log log = Core.log;
+        log.info("Application Start...");
+        long start = System.currentTimeMillis();
         //Bean加载
         BeanCenter beanCenter = new BeanCenter();
         beanCenter.load();
@@ -22,7 +27,8 @@ public class Application {
         NioServerSelector selector = new NioServerSelector();
         //selector.accept();
         selector.read();
-        while (true){
+        log.info("Application Start Success...\nCost:{}ms", System.currentTimeMillis() - start);
+        while (true) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
