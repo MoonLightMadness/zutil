@@ -25,6 +25,7 @@ import app.reflect.ReflectUtils;
 import app.reflect.annotation.Fill;
 import app.reflect.annotation.Path;
 import app.reflect.container.Indicators;
+import app.system.ConfigCenter;
 import app.system.ServiceUnit;
 import app.utils.MathUtils;
 import app.utils.Packer;
@@ -328,6 +329,12 @@ public class playTest extends ServiceUnit {
         data = Packer.pack(mapper.selectOne(data,data));
         System.out.println(System.currentTimeMillis() - start);
         System.out.println(data);
+    }
+
+    @Test
+    public void test21(){
+        ConfigCenter.load();
+        System.out.println(ConfigCenter.get("mysql.path"));
     }
 
     private String getStackTrace(Exception e) {
