@@ -333,7 +333,9 @@ public class playTest extends ServiceUnit {
 
     @Test
     public void test21(){
-        ConfigCenter.load();
+        //ConfigCenter.load();
+//        BeanCenter beanCenter = new BeanCenter();
+//        beanCenter.load();
         System.out.println(ConfigCenter.get("mysql.path"));
     }
 

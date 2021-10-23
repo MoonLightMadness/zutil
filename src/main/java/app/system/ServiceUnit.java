@@ -13,5 +13,8 @@ public class ServiceUnit {
 
     public Mapper mapper = ServiceCenter.mapper;
 
+    static {
+        ConfigCenter.load();
+    }
 
 }

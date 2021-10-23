@@ -6,6 +6,7 @@ import app.config.impl.ConfigInitializer;
 import app.reflect.annotation.AutoFill;
 import app.reflect.annotation.Fill;
 import app.reflect.annotation.Service;
+import app.system.ConfigCenter;
 import app.system.Core;
 
 import java.lang.reflect.Field;
@@ -25,9 +26,8 @@ public class BeanCenter {
     }
 
     public void load() {
-//        ConfigInitializer configInitializer = new ConfigInitializer();
-//        configInitializer.loadConfigPath(new String[]{config.read("bean.scan")});
-        String[] paths = ReflectUtils.scanPackage(config.read("work.type"), config.read("bean.scan"));
+        ConfigCenter.load();
+        String[] paths = ReflectUtils.scanPackage(ConfigCenter.get("work.type"), ConfigCenter.get("bean.scan"));
         try {
             for (String path : paths) {
                 Class clazz = Class.forName(path);
