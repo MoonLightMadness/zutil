@@ -1,19 +1,23 @@
 package app.net;
 
 import app.game.vo.BaseExceptionRspVO;
+import app.game.vo.BaseRspVO;
 import app.http.HttpParser;
 import app.http.entity.HttpRequestEntity;
 import app.http.entity.HttpRespondEntity;
 import app.log.Log;
 import app.net.annotation.NotNull;
 import app.net.annotation.Valid;
+import app.net.base.ResponseWarpper;
 import app.net.entity.CheckRspVO;
 import app.net.entity.Message;
 import app.parser.JSONTool;
+import app.parser.exception.ServiceException;
 import app.reflect.BeanManager;
 import app.reflect.container.Indicators;
 import app.reflect.domain.ReflectIndicator;
 import app.system.Core;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -72,7 +76,7 @@ public class WorkTrigger implements Runnable{
         }
     }
 
-
+    @SneakyThrows
     private void invoke(Message message){
         try {
             log.info("进入invoke方法");
@@ -96,8 +100,16 @@ public class WorkTrigger implements Runnable{
                 return;
             }
             Object oc = BeanManager.get(clazz.getSimpleName());
+            if(oc == null){
+                log.info("空对象oc,直接返回失败");
+                BaseExceptionRspVO baseExceptionRspVO = new BaseExceptionRspVO();
+                baseExceptionRspVO.setCode("999999");
+                baseExceptionRspVO.setMsg("空对象oc");
+                returnResult(baseExceptionRspVO,message.getChannel());
+            }
             try {
-                log.info("正在进入{}方法",clazz.getName());
+                log.info("正在进入{}方法",method.getName());
+                System.out.println(oc);
                 Object res = method.invoke(oc,obj);
                 returnResult(res,message.getChannel());
             }catch (Exception e){
