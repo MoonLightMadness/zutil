@@ -43,17 +43,19 @@ public class ReflectUtils {
      * @date 2021-09-16 09:05
      * @version V1.0
      */
-    public static String[] scanPackage(String workingType,String packageName) {
+    public static String[] scanPackage(String workingType, String packageName) {
         String workingPath = packageName;
-        if(workingType.toLowerCase(Locale.ROOT).equals("jar")){
+        if (workingType.toLowerCase(Locale.ROOT).equals("jar")) {
             workingPath = getJarSelfPath();
+            System.out.println("Running in JAR file...");
+            System.out.println("Working in : " + workingPath);
         }
         String[] paths;
         //判断程序是否是以jar包形式启动的
         if (workingPath.endsWith(".jar")) {
             paths = scanJarFile(workingPath, packageName).split("\n");
         } else {
-            workingPath = packageName.replace(".", "\\")+"/";
+            workingPath = packageName.replace(".", "\\") + "/";
             paths = scanDirectory(workingPath).split("\n");
         }
         return paths;
@@ -61,7 +63,7 @@ public class ReflectUtils {
 
 
     private static String scanDirectory(String directory) {
-        File file = new File("./target/classes/"+directory);
+        File file = new File("./target/classes/" + directory);
         StringBuilder sb = new StringBuilder();
         if (!file.exists()) {
             return sb.toString();
@@ -73,9 +75,9 @@ public class ReflectUtils {
             }
         } else {
             if (file.getPath().endsWith(".java") || file.getPath().endsWith(".class")) {
-                String path = file.getPath().replace(SimpleUtils.getFilePathSeparator(),".");
+                String path = file.getPath().replace(SimpleUtils.getFilePathSeparator(), ".");
                 path = path.split("classes")[1].substring(1);
-                path = path.substring(0,path.lastIndexOf("."));
+                path = path.substring(0, path.lastIndexOf("."));
                 sb.append(path).append("\n");
             }
         }
@@ -85,6 +87,7 @@ public class ReflectUtils {
 
     /**
      * 搜索给定包名下的所有类，并找出具有@Path注解的类以及该类下同样具有该注解的方法，数据存入容器中
+     *
      * @param packageName 包名
      * @param indicator   反射容器
      * @return
@@ -96,7 +99,7 @@ public class ReflectUtils {
         ReflectIndicator temp = null;
         String[] classes = ReflectUtils.scanPackage(Core.configer.read("work.type"), packageName);
         Class clazz = null;
-        for (String className : classes){
+        for (String className : classes) {
             try {
                 clazz = Class.forName(className);
             } catch (Exception e) {
@@ -131,9 +134,6 @@ public class ReflectUtils {
     }
 
 
-
-
-
     private static String[] generateParameters(Method method) {
         String[] paras = new String[method.getParameterCount()];
         int count = 0;
@@ -147,6 +147,7 @@ public class ReflectUtils {
     private static String scanJarFile(String path, String packageName) {
         File f = new File(path);
         StringBuilder sb = new StringBuilder();
+        System.out.println("Scaning in " + packageName);
         try {
             JarFile jarFile = new JarFile(f);
             Enumeration<JarEntry> entries = jarFile.entries();

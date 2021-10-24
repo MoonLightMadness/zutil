@@ -4,6 +4,7 @@ import app.config.Config;
 import app.log.Log;
 import app.reflect.ReflectUtils;
 import app.reflect.container.Indicators;
+import app.system.ConfigCenter;
 import app.system.Core;
 import app.utils.ThreadUitls;
 import java.io.IOException;
@@ -39,7 +40,8 @@ public class NioServerSelector {
     private Config config = Core.configer;
 
     public NioServerSelector() {
-        init("127.0.0.1", "10010");
+        init(ConfigCenter.get("self.ip"), ConfigCenter.get("self.port"));
+        log.info("Opening:{}/{}",ConfigCenter.get("self.ip"), ConfigCenter.get("self.port"));
     }
 
     public NioServerSelector(String ip, String port) {
