@@ -33,7 +33,7 @@ import java.nio.charset.StandardCharsets;
  * @Date 2021-09-26 13:48:03
  * @Author ZhangHL
  */
-public class WorkTrigger implements Runnable{
+public class WorkTrigger implements Runnable {
 
     private NioMessageQueue messageQueue;
 
@@ -41,11 +41,10 @@ public class WorkTrigger implements Runnable{
 
     private Log log = Core.log;
 
-    public WorkTrigger(NioMessageQueue nioMessageQueue,Indicators indicators){
+    public WorkTrigger(NioMessageQueue nioMessageQueue, Indicators indicators) {
         this.messageQueue = nioMessageQueue;
         this.indicators = indicators;
     }
-
 
 
     /**
@@ -61,10 +60,10 @@ public class WorkTrigger implements Runnable{
      */
     @Override
     public void run() {
-        while (true){
-            if(messageQueue.hasElement()){
+        while (true) {
+            if (messageQueue.hasElement()) {
                 Message message = messageQueue.get();
-                if(message != null){
+                if (message != null) {
                     invoke(message);
                 }
             }
@@ -77,58 +76,55 @@ public class WorkTrigger implements Runnable{
     }
 
     @SneakyThrows
-    private void invoke(Message message){
+    private void invoke(Message message) {
         try {
             log.info("进入invoke方法");
             long start = System.currentTimeMillis();
             HttpRequestEntity httpRequestEntity = parseData(message.getData());
-            if(httpRequestEntity == null){
+            if (httpRequestEntity == null) {
                 log.info("该消息为Respond,不予处理");
                 return;
             }
             ReflectIndicator reflectIndicator = indicators.get(httpRequestEntity.getArgs());
+            if(reflectIndicator == null){
+                returnFailed(message,"999999","路径错误");
+            }
             Class clazz = Class.forName(reflectIndicator.getClassPath());
-            Method method = getMetod(clazz,reflectIndicator.getMethodName());
+            Method method = getMetod(clazz, reflectIndicator.getMethodName());
             log.info("正在解析数据");
             String body = httpRequestEntity.getBody();
             Object obj = JSONTool.getObject(body.getBytes(StandardCharsets.UTF_8)
-                    ,method.getParameterTypes()[0]);
+                    , method.getParameterTypes()[0]);
             log.info("数据解析完毕");
             CheckRspVO checkRspVO = checkValid(obj);
-            if(checkRspVO.getCode().equals("999999")){
-                returnResult(checkRspVO,message.getChannel());
+            if (checkRspVO.getCode().equals("999999")) {
+                returnResult(checkRspVO, message.getChannel());
                 return;
             }
             Object oc = BeanManager.get(clazz.getSimpleName());
-            if(oc == null){
+            if (oc == null) {
                 log.info("空对象oc,直接返回失败");
-                BaseExceptionRspVO baseExceptionRspVO = new BaseExceptionRspVO();
-                baseExceptionRspVO.setCode("999999");
-                baseExceptionRspVO.setMsg("空对象oc");
-                returnResult(baseExceptionRspVO,message.getChannel());
+                returnFailed(message,"999999","空对象oc");
             }
             try {
-                log.info("正在进入{}方法",method.getName());
+                log.info("正在进入{}方法", method.getName());
                 System.out.println(oc);
-                Object res = method.invoke(oc,obj);
-                returnResult(res,message.getChannel());
-            }catch (Exception e){
-                BaseExceptionRspVO baseExceptionRspVO = new BaseExceptionRspVO();
+                Object res = method.invoke(oc, obj);
+                returnResult(res, message.getChannel());
+            } catch (Exception e) {
                 String msg = e.getCause().getMessage();
-                baseExceptionRspVO.setCode("999999");
-                baseExceptionRspVO.setMsg(msg);
-                returnResult(baseExceptionRspVO,message.getChannel());
+                returnFailed(message,"999999",msg);
             }
-            log.info("环节结束，用时:{}ms",System.currentTimeMillis()-start);
+            log.info("环节结束，用时:{}ms", System.currentTimeMillis() - start);
         } catch (ClassNotFoundException e) {
-            log.error("未找到该类:{}",e);
+            log.error("未找到该类:{}", e);
             e.printStackTrace();
         }
 
     }
 
-    private void returnResult(Object res, SocketChannel channel){
-        if(res != null){
+    private void returnResult(Object res, SocketChannel channel) {
+        if (res != null) {
             HttpRespondEntity httpRespondEntity = new HttpRespondEntity();
             byte[] bres = JSONTool.toJson(res);
             httpRespondEntity.setBody(new String(bres));
@@ -145,26 +141,26 @@ public class WorkTrigger implements Runnable{
         }
     }
 
-    private Method getMetod(Class clazz,String name){
+    private Method getMetod(Class clazz, String name) {
         Method[] methods = clazz.getMethods();
-        for (Method method : methods){
-            if(method.getName().equals(name)){
+        for (Method method : methods) {
+            if (method.getName().equals(name)) {
                 return method;
             }
         }
         return null;
     }
 
-    private CheckRspVO checkValid(Object obj){
+    private CheckRspVO checkValid(Object obj) {
         CheckRspVO checkRspVO = new CheckRspVO();
         try {
             Field[] fields = obj.getClass().getDeclaredFields();
-            for (Field field : fields){
+            for (Field field : fields) {
                 field.setAccessible(true);
-                if(field.isAnnotationPresent(NotNull.class)){
+                if (field.isAnnotationPresent(NotNull.class)) {
                     Object test = field.get(obj);
-                    if(test == null){
-                        checkRspVO.setMsg(field.getName()+" 不能为空");
+                    if (test == null) {
+                        checkRspVO.setMsg(field.getName() + " 不能为空");
                         checkRspVO.setCode("999999");
                         return checkRspVO;
                     }
@@ -177,9 +173,15 @@ public class WorkTrigger implements Runnable{
         return checkRspVO;
     }
 
-    private HttpRequestEntity parseData(byte[] data){
+    private HttpRequestEntity parseData(byte[] data) {
         return HttpParser.parseRequestEntiy(data);
     }
 
+    private void returnFailed(Message message, String code, String msg) {
+        BaseExceptionRspVO baseExceptionRspVO = new BaseExceptionRspVO();
+        baseExceptionRspVO.setCode(code);
+        baseExceptionRspVO.setMsg(msg);
+        returnResult(baseExceptionRspVO, message.getChannel());
+    }
 
 }
