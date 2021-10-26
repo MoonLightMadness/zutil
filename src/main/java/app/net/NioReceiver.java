@@ -60,6 +60,7 @@ public class NioReceiver implements Runnable{
                                 if(data.length > 0){
                                     queue.put((SocketChannel) key.channel(),data);
                                 }else {
+                                    log.info("该链接无效");
                                     key.channel().close();
                                 }
                             }else {

@@ -8,6 +8,7 @@ import app.http.entity.HttpRespondEntity;
 import app.log.Log;
 import app.net.annotation.NotNull;
 import app.net.annotation.Valid;
+import app.net.base.Response;
 import app.net.base.ResponseWarpper;
 import app.net.entity.CheckRspVO;
 import app.net.entity.Message;
@@ -17,6 +18,7 @@ import app.reflect.BeanManager;
 import app.reflect.container.Indicators;
 import app.reflect.domain.ReflectIndicator;
 import app.system.Core;
+import app.utils.Packer;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -61,11 +63,15 @@ public class WorkTrigger implements Runnable {
     @Override
     public void run() {
         while (true) {
-            if (messageQueue.hasElement()) {
-                Message message = messageQueue.get();
-                if (message != null) {
-                    invoke(message);
+            try {
+                if (messageQueue.hasElement()) {
+                    Message message = messageQueue.get();
+                    if (message != null) {
+                        invoke(message);
+                    }
                 }
+            }catch (Exception e){
+                Core.log.error("内部错误，原因:{}",e);
             }
             try {
                 Thread.sleep(10);
@@ -78,16 +84,22 @@ public class WorkTrigger implements Runnable {
     @SneakyThrows
     private void invoke(Message message) {
         try {
-            log.info("进入invoke方法");
+            log.info("进入invoke方法,Message:{}",new String(message.getData()));
             long start = System.currentTimeMillis();
-            HttpRequestEntity httpRequestEntity = parseData(message.getData());
+            Response response = parseData(message.getData());
+            if(response.getCode() == "999999"){
+                returnFailed(message,response.getCode(),response.getMsg());
+            }
+            HttpRequestEntity httpRequestEntity = Packer.pack(response.getData());
             if (httpRequestEntity == null) {
                 log.info("该消息为Respond,不予处理");
                 return;
             }
+            System.out.println(httpRequestEntity.getArgs());
             ReflectIndicator reflectIndicator = indicators.get(httpRequestEntity.getArgs());
             if(reflectIndicator == null){
                 returnFailed(message,"999999","路径错误");
+                return;
             }
             Class clazz = Class.forName(reflectIndicator.getClassPath());
             Method method = getMetod(clazz, reflectIndicator.getMethodName());
@@ -173,7 +185,7 @@ public class WorkTrigger implements Runnable {
         return checkRspVO;
     }
 
-    private HttpRequestEntity parseData(byte[] data) {
+    private Response parseData(byte[] data) {
         return HttpParser.parseRequestEntiy(data);
     }
 

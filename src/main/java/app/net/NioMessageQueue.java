@@ -27,11 +27,11 @@ public class NioMessageQueue {
     }
 
     public void put(SocketChannel channel,byte[] data){
-        Message message = new Message();
-        message.setChannel(channel);
-        message.setData(data);
-        message.setTimeStamp(LocalDateTime.now().toString());
         synchronized (NioMessageQueue.class){
+            Message message = new Message();
+            message.setChannel(channel);
+            message.setData(data);
+            message.setTimeStamp(LocalDateTime.now().toString());
             queue.add(message);
             log.info("消息队列消息+1,目前队列中有{}条消息",queue.size());
         }
