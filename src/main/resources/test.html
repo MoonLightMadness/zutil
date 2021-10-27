@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>标题</title>
+<script src="./JQuery3.6.0.js"></script>
+<script type="text/javascript">
+    function login() {
+        var userId = document.getElementById("at").value;
+        var bt = document.getElementById("bt").value;
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: 'http://118.195.183.142:10015/data/user/history',
+            // url: 'http://127.0.0.1:10015/data/user/history',
+            // contentType: "application/json",
+            data:JSON.stringify({
+                "userId": userId,
+                "bt": bt
+            }),
+            success: function (result) {
+                console.log("data is :" + result)
+                if (result.code == 200) {
+                    alert("登陆成功");
+                }else {
+                    alert(result.message)
+                }
+            },
+            error: function (res) {
+                console.log(res)
+            }
+        });
+    }
+</script>
+</head>
+
+
+<body>
+    <h1>我的第一个标题</h1>
+    <p>我的第一个段落。</p>
+    <form method="post" action="" enctype="application/json">
+        AT:<input title="AT" name="userId" id="at">
+        <br>
+        BT:<input title="BT" name="bt" id="bt">
+        <br>
+        <input type="button" onclick="login()" value="post">
+        <br>
+        <input type="submit">
+    </form>
+</body>
+</html>
