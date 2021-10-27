@@ -40,11 +40,17 @@ public class HttpRespondEntity {
      */
     private String body;
 
+    /**
+     * 同意任何跨源请求
+     */
+    private String ACAO = "Access-Control-Allow-Origin:*";
+
     @Override
     public String toString(){
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(protocol).append(" ").append(respondCode).append("\n");
         stringBuilder.append("Content-Type: ").append(contentType).append("\n");
+        stringBuilder.append(ACAO).append("\n");
         stringBuilder.append("\n");
         stringBuilder.append(body);
         return stringBuilder.toString();

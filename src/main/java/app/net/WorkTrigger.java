@@ -140,6 +140,7 @@ public class WorkTrigger implements Runnable {
             HttpRespondEntity httpRespondEntity = new HttpRespondEntity();
             byte[] bres = JSONTool.toJson(res);
             httpRespondEntity.setBody(new String(bres));
+            log.info("返回响应报文:{}",httpRespondEntity);
             byte[] respond = httpRespondEntity.toString().getBytes(StandardCharsets.UTF_8);
             ByteBuffer buffer = ByteBuffer.allocate(respond.length);
             buffer.put(respond);
