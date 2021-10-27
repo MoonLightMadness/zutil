@@ -9,6 +9,7 @@
         var userId = document.getElementById("at").value;
         var bt = document.getElementById("bt").value;
         $.ajax({
+            async: false, //是否为当前的请求触发全局AJAX事件处理函数  
             type: "POST",
             dataType: "json",
             url: 'http://118.195.183.142:10015/data/user/history',
@@ -19,15 +20,11 @@
                 "bt": bt
             }),
             success: function (result) {
-                console.log("data is :" + result)
-                if (result.code == 200) {
-                    alert("登陆成功");
-                }else {
-                    alert(result.message)
-                }
+                console.log("data is :" + JSON.stringify(result));
+                document.getElementById("ta").value = result[0].logInTime;
             },
             error: function (res) {
-                console.log(res)
+                console.log("ERROE "+res)
             }
         });
     }
@@ -46,6 +43,11 @@
         <input type="button" onclick="login()" value="post">
         <br>
         <input type="submit">
+        <br>
+        <span>
+            <textarea id="ta" style="height: 200px;width: 300px;"></textarea>
+                
+        </span>
     </form>
 </body>
 </html>
