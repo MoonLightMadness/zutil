@@ -13,11 +13,19 @@ import java.nio.channels.SocketChannel;
 public class NioSender {
 
     public static void send(SocketChannel channel,byte[] data){
-        ByteBuffer byteBuffer = ByteBuffer.allocate(data.length);
-        byteBuffer.put(data);
-        byteBuffer.flip();
+        ByteBuffer buffer = ByteBuffer.allocate(data.length);
+        int len = data.length;
+        buffer.put(data);
+        buffer.flip();
         try {
-            channel.write(byteBuffer);
+            int sended = channel.write(buffer);
+            len -= sended;
+            if(len > 0){
+                byte[] rest = new byte[len];
+                System.arraycopy(data,sended,rest,0,len);
+                send(channel,rest);
+            }
+            channel.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

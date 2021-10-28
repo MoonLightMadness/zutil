@@ -19,8 +19,10 @@ import app.parser.exception.ServiceException;
 import app.reflect.BeanManager;
 import app.reflect.container.Indicators;
 import app.reflect.domain.ReflectIndicator;
+import app.system.ConfigCenter;
 import app.system.Core;
 import app.utils.Packer;
+import app.utils.SimpleUtils;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -97,7 +99,11 @@ public class WorkTrigger implements Runnable {
                 log.info("该消息为Respond,不予处理");
                 return;
             }
-            System.out.println(httpRequestEntity.getArgs());
+            //获取文件
+            if (httpRequestEntity.getArgs().indexOf('.') != -1) {
+                returnResult(getFile(httpRequestEntity.getArgs()), message.getChannel());
+                return;
+            }
             ReflectIndicator reflectIndicator = indicators.get(httpRequestEntity.getArgs());
             if (reflectIndicator == null) {
                 returnFailed(message, "999999", "路径错误");
@@ -137,6 +143,18 @@ public class WorkTrigger implements Runnable {
 
     }
 
+    private String getFile(String args) {
+        args = args.substring(1);
+        if(args.indexOf('/') == -1){
+            return null;
+        }
+        String path = args.substring(0, args.indexOf('/'));
+        int len = path.length() + 1;
+        path = ConfigCenter.get("mapper." + path);
+        path = path + args.substring(len);
+        return new String(SimpleUtils.readFile(path));
+    }
+
     private void returnResult(Object res, SocketChannel channel) {
         if (res != null) {
             if (res.getClass() == TypeResponse.class) {
@@ -144,7 +162,7 @@ public class WorkTrigger implements Runnable {
                 return;
             }
             HttpRespondEntity httpRespondEntity = new HttpRespondEntity();
-            byte[] bres = new byte[0];
+            byte[] bres;
             if (res.getClass() != String.class) {
                 bres = JSONTool.toJson(res);
             } else {
@@ -165,10 +183,17 @@ public class WorkTrigger implements Runnable {
 
     private void sendData(byte[] data, SocketChannel channel) {
         ByteBuffer buffer = ByteBuffer.allocate(data.length);
+        int len = data.length;
         buffer.put(data);
         buffer.flip();
         try {
-            channel.write(buffer);
+            int sended = channel.write(buffer);
+            len -= sended;
+            if(len > 0){
+                byte[] rest = new byte[len];
+                System.arraycopy(data,sended,rest,0,len);
+                sendData(rest,channel);
+            }
             channel.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -215,7 +240,11 @@ public class WorkTrigger implements Runnable {
         BaseExceptionRspVO baseExceptionRspVO = new BaseExceptionRspVO();
         baseExceptionRspVO.setCode(code);
         baseExceptionRspVO.setMsg(msg);
-        returnResult(baseExceptionRspVO, message.getChannel());
+        HttpRespondEntity httpRespondEntity = new HttpRespondEntity();
+        httpRespondEntity.setRespondCode("500");
+        httpRespondEntity.setBody(baseExceptionRspVO.toString());
+        log.info("返回响应报文:{}", httpRespondEntity);
+        sendData(httpRespondEntity.toString().getBytes(StandardCharsets.UTF_8), message.getChannel());
     }
 
 }

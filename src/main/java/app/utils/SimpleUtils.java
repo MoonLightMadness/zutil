@@ -289,11 +289,14 @@ public class SimpleUtils {
             return null;
         }
         try {
-            FileInputStream fis = new FileInputStream(file);
-            byte[] content = new byte[fis.available()];
-            fis.read(content);
-            fis.close();
-            return content;
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            String temp;
+            StringBuilder builder = new StringBuilder();
+            while ((temp = reader.readLine()) != null) {
+                builder.append(temp).append("\n");
+            }
+            reader.close();
+            return builder.toString().getBytes(StandardCharsets.UTF_8);
         } catch (FileNotFoundException e) {
             log.error(null, e.getMessage());
             e.printStackTrace();
@@ -758,6 +761,7 @@ public class SimpleUtils {
 
     /**
      * 格式化字符串
+     *
      * @param str  str
      * @param args
      * @return @return {@link String }

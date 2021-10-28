@@ -10,6 +10,7 @@ import app.net.constants.TypeResponseConstant;
 import app.reflect.BeanCenter;
 import app.reflect.annotation.Fill;
 import app.reflect.annotation.Path;
+import app.system.ConfigCenter;
 import app.system.Core;
 import app.utils.SimpleUtils;
 
@@ -47,7 +48,7 @@ public class Application {
 
     @Path("/page")
     public TypeResponse getMainPage(BaseRspVO baseRspVO){
-        String body = new String(SimpleUtils.readFile("./test.html"));
+        String body = new String(SimpleUtils.readFile(ConfigCenter.get("main.page")));
         body = body.replace("\r","");
         body = body.replace("\n","");
         TypeResponse typeResponse = new TypeResponse();

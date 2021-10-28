@@ -49,3 +49,7 @@ utils.savePath = C:\Users\Administrator\Desktop\temp\save\
 self.ip = 127.0.0.1
 
 self.port = 10015
+
+main.page = ./test.html
+
+mapper.main = ./
