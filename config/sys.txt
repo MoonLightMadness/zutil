@@ -50,6 +50,6 @@ self.ip = 127.0.0.1
 
 self.port = 10015
 
-main.page = ./test.html
+main.page = ./src/main/resources/test.html
 
-mapper.main = ./
+mapper.main = ./src/main/resources/

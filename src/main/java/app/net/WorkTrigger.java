@@ -12,6 +12,7 @@ import app.net.annotation.Valid;
 import app.net.base.Response;
 import app.net.base.ResponseWarpper;
 import app.net.base.TypeResponse;
+import app.net.constants.TypeResponseConstant;
 import app.net.entity.CheckRspVO;
 import app.net.entity.Message;
 import app.parser.JSONTool;
@@ -32,6 +33,7 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 /**
  * @ClassName : app.net.WorkTrigger
@@ -143,7 +145,9 @@ public class WorkTrigger implements Runnable {
 
     }
 
-    private String getFile(String args) {
+    private TypeResponse getFile(String args) {
+        TypeResponse typeResponse = new TypeResponse();
+        typeResponse.setType(args.substring(args.lastIndexOf('.') + 1));
         args = args.substring(1);
         if(args.indexOf('/') == -1){
             return null;
@@ -152,13 +156,14 @@ public class WorkTrigger implements Runnable {
         int len = path.length() + 1;
         path = ConfigCenter.get("mapper." + path);
         path = path + args.substring(len);
-        return new String(SimpleUtils.readFile(path));
+        typeResponse.setData(new String(SimpleUtils.readFile(path)));
+        return typeResponse;
     }
 
     private void returnResult(Object res, SocketChannel channel) {
         if (res != null) {
             if (res.getClass() == TypeResponse.class) {
-                returnHtmlPage(res, channel);
+                returnOthers(res, channel);
                 return;
             }
             HttpRespondEntity httpRespondEntity = new HttpRespondEntity();
@@ -174,8 +179,15 @@ public class WorkTrigger implements Runnable {
         }
     }
 
-    private void returnHtmlPage(Object res, SocketChannel channel) {
+    private void returnOthers(Object res, SocketChannel channel) {
         TypeResponse response = Packer.pack(res);
+        if(response.getType().equals(TypeResponseConstant.CSS.toLowerCase(Locale.ROOT))){
+            HttpRespondEntity httpRespondEntity = new HttpRespondEntity();
+            httpRespondEntity.setBody(response.getData().toString());
+            httpRespondEntity.setContentType("text/css; charset=utf-8");
+            sendData(httpRespondEntity.toString().getBytes(StandardCharsets.UTF_8), channel);
+            return;
+        }
         HttpRespondHTMLEntity httpRespondHTMLEntity = new HttpRespondHTMLEntity();
         httpRespondHTMLEntity.setBody(response.getData().toString());
         sendData(httpRespondHTMLEntity.toString().getBytes(StandardCharsets.UTF_8), channel);

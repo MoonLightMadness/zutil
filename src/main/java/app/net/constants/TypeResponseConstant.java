@@ -16,4 +16,14 @@ public class TypeResponseConstant {
 
     public static final int JSON_ERROR = 4;
 
+    public static final int CSS_OK = 5;
+
+    public static final int CSS_ERROR = 6;
+
+    public static final String HTML = "HTML";
+
+    public static final String JSON = "JSON";
+
+    public static final String CSS = "CSS";
+
 }

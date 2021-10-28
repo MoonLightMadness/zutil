@@ -5,25 +5,37 @@
 <title>标题</title>
 <script type="text/javascript" src="./JQuery3.6.0.js"></script>
 <script type="text/javascript" src="./test.js"></script>
+<link rel="stylesheet"  href="./test.css">
 </head>
 
 
 <body>
-    <h1>我的第一个标题</h1>
-    <p>我的第一个段落。</p>
-    <form method="post" action="" enctype="application/json">
-        AT:<input title="AT" name="userId" id="at">
-        <br>
-        BT:<input title="BT" name="bt" id="bt">
-        <br>
-        <input type="button" onclick="login()" value="post">
-        <br>
-        <input type="submit">
-        <br>
-        <span>
-            <textarea id="ta" style="height: 200px;width: 300px;"></textarea>
-                
-        </span>
-    </form>
+    <div id="main">
+        <!--侧栏页面设计-->
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#">服务</a>
+        <a href="#">Services</a>
+        <a href="#">其他</a>
+        <a href="#">关于</a>
+  </div>
+  <span style="font-size:30px; cursor:pointer" onclick="openNav()">&#9776; 开始</span>
+  <h1>标题</h1>
+  <p>段落。</p>
+  <form method="post" action="" enctype="application/json">
+      AT:<input title="AT" name="userId" id="at">
+      <br>
+      BT:<input title="BT" name="bt" id="bt">
+      <br>
+      <input type="button" onclick="login()" value="post">
+      <br>
+      <input type="submit">
+      <br>
+      <span>
+          <textarea id="ta" style="height: 200px;width: 300px;"></textarea>
+              
+      </span>
+  </form>
+    </div>
 </body>
 </html>

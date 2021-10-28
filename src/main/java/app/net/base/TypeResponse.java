@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class TypeResponse {
 
-    private int type;
+    private Object type;
 
     private Object data;
 
