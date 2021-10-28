@@ -3,32 +3,8 @@
 <head>
 <meta charset="utf-8">
 <title>标题</title>
-<script src="./JQuery3.6.0.js"></script>
-<script type="text/javascript">
-    function login() {
-        var userId = document.getElementById("at").value;
-        var bt = document.getElementById("bt").value;
-        $.ajax({
-            async: false, //是否为当前的请求触发全局AJAX事件处理函数  
-            type: "POST",
-            dataType: "json",
-            url: 'http://118.195.183.142:10015/data/user/history',
-            // url: 'http://127.0.0.1:10015/data/user/history',
-            // contentType: "application/json",
-            data:JSON.stringify({
-                "userId": userId,
-                "bt": bt
-            }),
-            success: function (result) {
-                console.log("data is :" + JSON.stringify(result));
-                document.getElementById("ta").value = result[0].logInTime;
-            },
-            error: function (res) {
-                console.log("ERROE "+res)
-            }
-        });
-    }
-</script>
+<script type="text/javascript" src="./JQuery3.6.0.js"></script>
+<script type="text/javascript" src="./test.js"></script>
 </head>
 
 

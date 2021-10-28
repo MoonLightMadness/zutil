@@ -2,10 +2,16 @@ package app.play;
 
 import app.config.annotation.ConfigPath;
 import app.config.impl.ConfigInitializer;
+import app.game.vo.BaseRspVO;
 import app.log.Log;
 import app.net.NioServerSelector;
+import app.net.base.TypeResponse;
+import app.net.constants.TypeResponseConstant;
 import app.reflect.BeanCenter;
+import app.reflect.annotation.Fill;
+import app.reflect.annotation.Path;
 import app.system.Core;
+import app.utils.SimpleUtils;
 
 import java.util.Arrays;
 
@@ -15,6 +21,8 @@ import java.util.Arrays;
  * @Date 2021-09-18 13:32:38
  * @Author ZhangHL
  */
+@Path("/main")
+@Fill
 public class Application {
     public static void main(String[] args) {
         Log log = Core.log;
@@ -35,5 +43,17 @@ public class Application {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Path("/page")
+    public TypeResponse getMainPage(BaseRspVO baseRspVO){
+        String body = new String(SimpleUtils.readFile("./test.html"));
+        body = body.replace("\r","");
+        body = body.replace("\n","");
+        TypeResponse typeResponse = new TypeResponse();
+        typeResponse.setType(TypeResponseConstant.HTML_OK);
+        typeResponse.setData(body);
+        return typeResponse;
+
     }
 }

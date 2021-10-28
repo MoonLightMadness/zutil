@@ -5,11 +5,13 @@ import app.game.vo.BaseRspVO;
 import app.http.HttpParser;
 import app.http.entity.HttpRequestEntity;
 import app.http.entity.HttpRespondEntity;
+import app.http.entity.HttpRespondHTMLEntity;
 import app.log.Log;
 import app.net.annotation.NotNull;
 import app.net.annotation.Valid;
 import app.net.base.Response;
 import app.net.base.ResponseWarpper;
+import app.net.base.TypeResponse;
 import app.net.entity.CheckRspVO;
 import app.net.entity.Message;
 import app.parser.JSONTool;
@@ -70,8 +72,8 @@ public class WorkTrigger implements Runnable {
                         invoke(message);
                     }
                 }
-            }catch (Exception e){
-                Core.log.error("内部错误，原因:{}",e);
+            } catch (Exception e) {
+                Core.log.error("内部错误，原因:{}", e);
             }
             try {
                 Thread.sleep(10);
@@ -84,11 +86,11 @@ public class WorkTrigger implements Runnable {
     @SneakyThrows
     private void invoke(Message message) {
         try {
-            log.info("进入invoke方法,Message:{}",new String(message.getData()));
+            log.info("进入invoke方法,Message:{}", new String(message.getData()));
             long start = System.currentTimeMillis();
             Response response = parseData(message.getData());
-            if(response.getCode() == "999999"){
-                returnFailed(message,response.getCode(),response.getMsg());
+            if (response.getCode() == "999999") {
+                returnFailed(message, response.getCode(), response.getMsg());
             }
             HttpRequestEntity httpRequestEntity = Packer.pack(response.getData());
             if (httpRequestEntity == null) {
@@ -97,8 +99,8 @@ public class WorkTrigger implements Runnable {
             }
             System.out.println(httpRequestEntity.getArgs());
             ReflectIndicator reflectIndicator = indicators.get(httpRequestEntity.getArgs());
-            if(reflectIndicator == null){
-                returnFailed(message,"999999","路径错误");
+            if (reflectIndicator == null) {
+                returnFailed(message, "999999", "路径错误");
                 return;
             }
             Class clazz = Class.forName(reflectIndicator.getClassPath());
@@ -116,7 +118,7 @@ public class WorkTrigger implements Runnable {
             Object oc = BeanManager.get(clazz.getSimpleName());
             if (oc == null) {
                 log.info("空对象oc,直接返回失败");
-                returnFailed(message,"999999","空对象oc");
+                returnFailed(message, "999999", "空对象oc");
             }
             try {
                 log.info("正在进入{}方法", method.getName());
@@ -125,7 +127,7 @@ public class WorkTrigger implements Runnable {
                 returnResult(res, message.getChannel());
             } catch (Exception e) {
                 String msg = e.getCause().getMessage();
-                returnFailed(message,"999999",msg);
+                returnFailed(message, "999999", msg);
             }
             log.info("环节结束，用时:{}ms", System.currentTimeMillis() - start);
         } catch (ClassNotFoundException e) {
@@ -137,20 +139,39 @@ public class WorkTrigger implements Runnable {
 
     private void returnResult(Object res, SocketChannel channel) {
         if (res != null) {
-            HttpRespondEntity httpRespondEntity = new HttpRespondEntity();
-            byte[] bres = JSONTool.toJson(res);
-            httpRespondEntity.setBody(new String(bres));
-            log.info("返回响应报文:{}",httpRespondEntity);
-            byte[] respond = httpRespondEntity.toString().getBytes(StandardCharsets.UTF_8);
-            ByteBuffer buffer = ByteBuffer.allocate(respond.length);
-            buffer.put(respond);
-            buffer.flip();
-            try {
-                channel.write(buffer);
-                channel.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (res.getClass() == TypeResponse.class) {
+                returnHtmlPage(res, channel);
+                return;
             }
+            HttpRespondEntity httpRespondEntity = new HttpRespondEntity();
+            byte[] bres = new byte[0];
+            if (res.getClass() != String.class) {
+                bres = JSONTool.toJson(res);
+            } else {
+                bres = ((String) res).getBytes();
+            }
+            httpRespondEntity.setBody(new String(bres));
+            log.info("返回响应报文:{}", httpRespondEntity);
+            sendData(httpRespondEntity.toString().getBytes(StandardCharsets.UTF_8), channel);
+        }
+    }
+
+    private void returnHtmlPage(Object res, SocketChannel channel) {
+        TypeResponse response = Packer.pack(res);
+        HttpRespondHTMLEntity httpRespondHTMLEntity = new HttpRespondHTMLEntity();
+        httpRespondHTMLEntity.setBody(response.getData().toString());
+        sendData(httpRespondHTMLEntity.toString().getBytes(StandardCharsets.UTF_8), channel);
+    }
+
+    private void sendData(byte[] data, SocketChannel channel) {
+        ByteBuffer buffer = ByteBuffer.allocate(data.length);
+        buffer.put(data);
+        buffer.flip();
+        try {
+            channel.write(buffer);
+            channel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
